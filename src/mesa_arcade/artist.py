@@ -5,8 +5,7 @@ import mesa
 
 from mesa_arcade.utils import parse_color
 
-
-class CellArtist:
+class Artist:
     def __init__(
         self,
         color: str | tuple | list | None = "blue",
@@ -19,8 +18,8 @@ class CellArtist:
         dynamic_position = True,
         dynamic_agent_set = True,
         agent_selector = lambda agent: True,
-        agent_x_position = lambda agent: agent.cell.coordinate[0],
-        agent_y_position = lambda agent: agent.cell.coordinate[1],
+        #agent_x_position = lambda agent: agent.cell.coordinate[0],
+        #agent_y_position = lambda agent: agent.cell.coordinate[1],
     ):
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
@@ -32,11 +31,8 @@ class CellArtist:
         self.dynamic_position = dynamic_position
         self.dynamic_agent_set = dynamic_agent_set
         self.agent_selector = agent_selector
-        self.agent_x_position = agent_x_position
-        self.agent_y_position = agent_y_position
-
-        self.agent_x_constant = None
-        self.agent_y_constant = None
+        #self.agent_x_position = agent_x_position
+        #self.agent_y_position = agent_y_position
 
         self.agents: list[mesa.Agent] | None = None
 
@@ -49,10 +45,25 @@ class CellArtist:
         self.figure = figure
         self.renderer = renderer
         self.setup_sprites()
-
-    def select_agents(self) -> list[mesa.Agent]:
-        return [agent for agent in self.renderer.model.agents if self.agent_selector(agent)]
     
+    def draw(self):
+        self.sprite_list.draw()
+    
+    def fill_color_dict(self):
+        if isinstance(self.color_map, str):
+            norm = matplotlib.colors.Normalize(vmin=self.color_vmin, vmax=self.color_vmax)
+            cmap = matplotlib.colormaps[self.color_map]
+            for color_value in range(self.color_vmin-100, self.color_vmax+101):
+                rgb = tuple(int(255*c) for c in cmap(norm(color_value))[0:3])
+                self.color_dict[color_value] = rgb
+        
+        elif isinstance(self.color_map, dict):
+            self.color_dict = {
+                key: parse_color(color=color) for key, color in self.color_map.items()
+            }
+        else:
+            raise ValueError("`color_map` must be a str or a dict.")
+
     def assert_correct_color_input(self):
         if self.color_attribute is None:
             assert self.color is not None
@@ -62,24 +73,76 @@ class CellArtist:
             if isinstance(self.color_map, str):
                 assert self.color_vmin is not None and self.color_vmax is not None
     
+    def set_sprite_position(self, x, y, sprite):
+        sprite.center_x = (
+            x * self.figure.cell_agent_width 
+            + self.figure.x 
+            + self.figure.cell_agent_width / 2
+        )
+        sprite.center_y = (
+            y * self.figure.cell_agent_height 
+            + self.figure.y 
+            + self.figure.cell_agent_height / 2
+        )
+
+    def set_sprite_color(self, agent, sprite):
+        pass
+
+    def create_sprite(self, agent):
+        pass
+
+    def add_sprite(self, agent):
+        pass
+
+    def setup_sprites(self):
+        pass
+       
+    
+class CellArtist(Artist):
+    def __init__(
+            self, 
+            color = "blue", 
+            color_attribute = None, 
+            color_map = "bwr", 
+            color_vmin = None, 
+            color_vmax=None, 
+            shape="rect", 
+            dynamic_color=True, 
+            dynamic_position=True, 
+            dynamic_agent_set=True, 
+            agent_selector=lambda agent: True,
+            ):
+        super().__init__(
+            color, 
+            color_attribute, 
+            color_map, 
+            color_vmin, 
+            color_vmax, 
+            shape, 
+            dynamic_color, 
+            dynamic_position, 
+            dynamic_agent_set, 
+            agent_selector,
+            )
+    
     def set_sprite_color(self, agent, sprite):
         if self.color_attribute is None:
             sprite.color = self.color
         else:
             sprite.color = self.color_dict[int(getattr(agent, self.color_attribute))]
-        
-    def set_sprite_position(self, agent, sprite):
-        sprite.center_x = (
-            self.agent_x_position(agent) * self.figure.cell_agent_width 
-            + self.figure.x 
-            + self.figure.cell_agent_width / 2
-        )
-        sprite.center_y = (
-            self.agent_y_position(agent) * self.figure.cell_agent_height 
-            + self.figure.y 
-            + self.figure.cell_agent_height / 2
-        )
+            
+    def add_sprite(self, agent):
+        sprite = self.create_sprite(agent=agent)
+        self.sprite_list.append(sprite)
+        self.sprite_dict[agent] = sprite
 
+    def setup_sprites(self):
+        self.agents = self.select_agents()
+        self.sprite_list = arcade.SpriteList(use_spatial_hash=False)
+        self.sprite_dict = {}
+        for agent in self.agents:
+            self.add_sprite(agent=agent)
+    
     def create_sprite(self, agent):
         if self.shape == "rect":
             sprite = arcade.SpriteSolidColor(
@@ -94,22 +157,13 @@ class CellArtist:
         else:
             raise ValueError("`shape` must be on of: 'rect', 'circle'.")
         
-        self.set_sprite_position(agent=agent, sprite=sprite)
+        self.set_sprite_position(x=agent.cell.coordinate[0], y=agent.cell.coordinate[1], sprite=sprite)
         self.set_sprite_color(agent=agent, sprite=sprite)
         return sprite
 
-    def add_sprite(self, agent):
-        sprite = self.create_sprite(agent=agent)
-        self.sprite_list.append(sprite)
-        self.sprite_dict[agent] = sprite
-
-    def setup_sprites(self):
-        self.agents = self.select_agents()
-        self.sprite_list = arcade.SpriteList(use_spatial_hash=False)
-        self.sprite_dict = {}
-        for agent in self.agents:
-            self.add_sprite(agent=agent)
-       
+    def select_agents(self) -> list[mesa.Agent]:
+        return [agent for agent in self.renderer.model.agents if self.agent_selector(agent)]
+    
     def update(self):
         # TODO: use dirty_color and dirty_position to update only specific agent sprites
         
@@ -141,7 +195,7 @@ class CellArtist:
         if self.dynamic_color and self.dynamic_position:
             for agent, sprite in self.sprite_dict.items():
                 self.set_sprite_color(agent=agent, sprite=sprite)
-                self.set_sprite_position(agent=agent, sprite=sprite)
+                self.set_sprite_position(x=agent.cell.coordinate[0], y=agent.cell.coordinate[1], sprite=sprite)
         
         # if only the colors can change
         elif self.dynamic_color:
@@ -151,40 +205,28 @@ class CellArtist:
         # if only the positions can change
         elif self.dynamic_position:
             for agent, sprite in self.sprite_dict.items():
-                self.set_sprite_position(agent=agent, sprite=sprite)
+                self.set_sprite_position(x=agent.cell.coordinate[0], y=agent.cell.coordinate[1], sprite=sprite)
 
 
-    def fill_color_dict(self):
-        if isinstance(self.color_map, str):
-            norm = matplotlib.colors.Normalize(vmin=self.color_vmin, vmax=self.color_vmax)
-            cmap = matplotlib.colormaps[self.color_map]
-            for color_value in range(self.color_vmin-100, self.color_vmax+101):
-                rgb = tuple(int(255*c) for c in cmap(norm(color_value))[0:3])
-                self.color_dict[color_value] = rgb
-        
-        elif isinstance(self.color_map, dict):
-            self.color_dict = {
-                key: parse_color(color=color) for key, color in self.color_map.items()
-            }
-        else:
-            raise ValueError("`color_map` must be a str or a dict.")
-
-    def draw(self):
-        self.sprite_list.draw()
 
 
-class PropertyLayerArtist(CellArtist):
+class PropertyLayerArtist(Artist):
     def __init__(
             self,
             layer_name,
-            color = "blue",
-            color_attribute = None,
-            color_map = "bwr",
-            color_vmin = None,
+            color_map="bwr",
+            color_vmin=None,
             color_vmax=None,
             shape="rect",
             dynamic_color=True,
-            dynamic_position=True,
-            dynamic_agent_set=True,
             ):
-        super().__init__(color, color_attribute, color_map, color_vmin, color_vmax, shape, dynamic_color, dynamic_position, dynamic_agent_set)
+        
+        super().__init__(
+            color_map=color_map,
+            color_vmin=color_vmin,
+            color_vmax=color_vmax,
+            shape=shape,
+            dynamic_color=dynamic_color,
+            dynamic_position=False,
+            dynamic_agent_set=False,
+            )
