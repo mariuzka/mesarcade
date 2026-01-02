@@ -19,8 +19,8 @@ class Figure:
         
         self.n_grid_cols = self.renderer.model.grid.width
         self.n_grid_rows = self.renderer.model.grid.height
-        self.cell_agent_width = self.width / self.n_grid_cols
-        self.cell_agent_height = self.height / self.n_grid_rows
+        self.cell_width = self.width / self.n_grid_cols
+        self.cell_height = self.height / self.n_grid_rows
 
         self.x = x
         self.y = y
@@ -90,7 +90,7 @@ class ModelHistoryPlot(Figure):
         super().__init__(components=[plot], title=title)
 
 class SpacePlot(Figure):
-    def __init__(self, artists=[], background_color="lightgray", title=None):
+    def __init__(self, artists=[], background_color="white", title=None):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
