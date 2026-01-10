@@ -201,31 +201,19 @@ class Artist:
                     )
 
 
-class CellAgents(Artist):
+class CellAgentArtists(Artist):
     def __init__(
             self, 
             color="blue", 
-            color_attribute=None, 
-            color_map="bwr", 
-            color_vmin=None, 
-            color_vmax=None, 
-            shape="rect", 
-            dynamic_color=True, 
-            dynamic_position=True, 
-            dynamic_population=True, 
-            entity_selector=lambda entity: True,
+            shape="circle",
+            *args,
+            **kwargs,
             ):
         super().__init__(
-            color, 
-            color_attribute, 
-            color_map, 
-            color_vmin, 
-            color_vmax, 
-            shape, 
-            dynamic_color, 
-            dynamic_position, 
-            dynamic_population, 
-            entity_selector,
+            color=color, 
+            shape=shape,
+            *args,
+            **kwargs,
             )
     
     def get_population(self):
@@ -235,35 +223,23 @@ class CellAgents(Artist):
         return entity.cell.coordinate
     
     
-class Cells(Artist):
+class CellArtists(Artist):
     def __init__(
             self, 
-            color="black", 
-            color_attribute=None, 
-            color_map="bwr", 
-            color_vmin=None, 
-            color_vmax=None, 
-            shape="rect", 
-            dynamic_color=True,
-            dynamic_position=False, 
+            color="black",
+            shape="rect",
+            dynamic_position=False,
             dynamic_population=False,
-            entity_selector=lambda entity: True,
-            jitter=False,
-            size=1,
+            *args, 
+            **kwargs,
             ):
         super().__init__(
-            color, 
-            color_attribute, 
-            color_map, 
-            color_vmin, 
-            color_vmax, 
-            shape, 
-            dynamic_color, 
-            dynamic_position, 
-            dynamic_population, 
-            entity_selector,
-            jitter=jitter,
-            size=size,
+            color=color,
+            shape=shape,
+            dynamic_position=dynamic_position,
+            dynamic_population=dynamic_population,
+            *args, 
+            **kwargs,
             )
     
     def get_population(self):
@@ -271,4 +247,24 @@ class Cells(Artist):
     
     def get_xy_position(self, entity):
         return entity.coordinate
+
+class ContinuousSpaceAgentArtists(Artist):
+    def __init__(
+            self, 
+            color="blue", 
+            shape="circle",
+            *args,
+            **kwargs,
+            ):
+        super().__init__(
+            color=color, 
+            shape=shape,
+            *args,
+            **kwargs,
+            )
     
+    def get_population(self):
+        return self.model.agents
+    
+    def get_xy_position(self, entity):
+        return entity.position

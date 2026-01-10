@@ -1,7 +1,7 @@
 import mesa_arcade as mesarc
 from mesa.examples.basic.schelling.model import Schelling
 
-agents = mesarc.CellAgents(
+agents = mesarc.CellAgentArtists(
     color_attribute="type",
     color_map={0: "blue", 1: "red"},
     shape="rect",

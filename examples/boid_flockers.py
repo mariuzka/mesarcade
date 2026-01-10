@@ -2,7 +2,7 @@ from mesa.examples.basic.boid_flockers.model import BoidFlockers
 import mesa_arcade as mesarc
 
 # agents
-birds = mesarc.ContinuousSpaceAgents()
+birds = mesarc.ContinuousSpaceAgentArtists()
 
 # space
 space = mesarc.ContinuousSpacePlot(artists=[birds])

@@ -2,8 +2,8 @@ import mesa_arcade as mesarc
 
 from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
 
-agents = mesarc.CellAgents(shape="circle")
-sugar = mesarc.Cells(
+agents = mesarc.CellAgentArtists(shape="circle")
+sugar = mesarc.CellArtists(
     color_attribute="sugar",
     color_map="Greens",
     color_vmin=0,
@@ -13,7 +13,7 @@ sugar = mesarc.Cells(
     dynamic_population=True,
     entity_selector=lambda cell: cell.sugar > 0,
     )
-spice = mesarc.Cells(
+spice = mesarc.CellArtists(
     color_attribute="spice",
     color_map="Reds",
     color_vmin=0,

@@ -2,7 +2,7 @@ import mesa_arcade as mesarc
 from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
 
 # agents
-agents = mesarc.CellAgents(
+agents = mesarc.CellAgentArtists(
     color_attribute="state",
     color_map={0: "white", 1: "black"},
     dynamic_population=False,
