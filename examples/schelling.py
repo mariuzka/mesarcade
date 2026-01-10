@@ -1,11 +1,12 @@
 import mesa_arcade as mesarc
 from mesa.examples.basic.schelling.model import Schelling
 
-agents = mesarc.CellArtist(
+agents = mesarc.CellAgents(
     color_attribute="type",
-    color_map={0: "blue", 1: "red"}
+    color_map={0: "blue", 1: "red"},
+    shape="rect",
 )
-space_plot = mesarc.SpacePlot(artists=agents)
+space_plot = mesarc.GridSpacePlot(artists=agents)
 
 density = mesarc.NumController("density", 0.8, 0.1, 0.9, 0.1)
 minority_pc = mesarc.NumController("minority_pc", 0.2, 0.0, 1.0, 0.05)
