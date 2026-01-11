@@ -2,20 +2,17 @@
 
 Mesa-arcade is a Python package which uses Arcade to visualize simulations built with Mesa.
 
-# Components
+## Components
 
 To visualize Mesa models, Mesa-arcade offers several components which can/must be combined by you:
 
-## Artists
+### Artists
 
 Artists are the visual representations of the entities in a mesa model.
 
 - `CellArtists`: A visual representation for `mesa.Cell` and `mesa.Property_Layer`.
 - `CellAgentArtists`: A visual representation for a set of `mesa.CellAgent`s.
 - `ContinuousSpaceAgentArtists`: A visual representation for a set of `mesa.ContinuousSpaceAgent`s.
-
-<br>
-<br>
 
 **Example:**
 
@@ -26,7 +23,9 @@ agents = mesar.CellAgentArtists(
 )
 ```
 
-## SpacePlots
+<br>
+
+# SpacePlots
 
 SpacePlots are visual representations of certain space types in Mesa and plot the corresponding `Artist`s at their position.
 You can add/layer as many artists as you want to.
@@ -43,8 +42,9 @@ We could add other artists, too.
 grid_space = mesar.GridSpacePlot(artists=[agents])
 ```
 
+<br>
 
-## HistoryPlots
+### HistoryPlots
 
 Line plots that plot (multiple) values as a function of the simulated time steps.
 
@@ -69,11 +69,11 @@ Interactive controllers of model attributes / parameters.
 
 **Example
 
-## Canvas
+### Canvas
 
 The `Canvas` is the main window in which all components are placed.
 
-# Example
+## Full example
 
 ```{python}
 import mesa_arcade as mesar
