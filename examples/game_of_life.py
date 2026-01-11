@@ -20,7 +20,7 @@ height = mesar.NumController("height", 50, 10, 200, 10)
 canvas = mesar.Canvas(
     model_class=ConwaysGameOfLife,
     plots=[space],
-    controllers=[initial_fraction_alive, width, height]
+    controllers=[initial_fraction_alive, width, height],
 )
 
 # show gui window

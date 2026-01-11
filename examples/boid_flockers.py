@@ -18,7 +18,7 @@ canvas = mesar.Canvas(
     model_class=BoidFlockers,
     plots=[space],
     controllers=[population_size, speed, vision, separation],
-    )
+)
 
 # show gui window
 canvas.show()

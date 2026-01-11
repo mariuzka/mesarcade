@@ -5,6 +5,7 @@ import random
 
 from mesa_arcade.utils import parse_color
 
+
 class Artist:
     def __init__(
         self,
@@ -15,11 +16,11 @@ class Artist:
         color_vmax=None,
         shape="rect",
         size=1,
-        entity_selector = lambda entity: True,
+        entity_selector=lambda entity: True,
         jitter=False,
-        dynamic_color = True,
-        dynamic_position = True,
-        dynamic_population = True,
+        dynamic_color=True,
+        dynamic_position=True,
+        dynamic_population=True,
     ):
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
@@ -38,7 +39,7 @@ class Artist:
         if self.color_attribute is not None:
             self.color_dict = {}
             self.fill_color_dict()
-    
+
     def set_size(self):
         self.width = self.figure.cell_width * self.size
         self.height = self.figure.cell_height * self.size
@@ -48,7 +49,7 @@ class Artist:
         self.renderer = renderer
         self.model = self.renderer.model
         self.population = self.get_population()
-        
+
         self.set_size()
         self.setup_sprites()
 
@@ -63,18 +64,18 @@ class Artist:
 
     def scale_y(self, y):
         pass
-    
+
     def draw(self):
         self.sprite_list.draw()
-    
+
     def fill_color_dict(self):
         if isinstance(self.color_map, str):
             norm = matplotlib.colors.Normalize(vmin=self.color_vmin, vmax=self.color_vmax)
             cmap = matplotlib.colormaps[self.color_map]
-            for color_value in range(self.color_vmin-100, self.color_vmax+101):
-                rgb = tuple(int(255*c) for c in cmap(norm(color_value))[0:3])
+            for color_value in range(self.color_vmin - 100, self.color_vmax + 101):
+                rgb = tuple(int(255 * c) for c in cmap(norm(color_value))[0:3])
                 self.color_dict[color_value] = rgb
-        
+
         elif isinstance(self.color_map, dict):
             self.color_dict = {
                 key: parse_color(color=color) for key, color in self.color_map.items()
@@ -85,12 +86,12 @@ class Artist:
     def assert_correct_color_input(self):
         if self.color_attribute is None:
             assert self.color is not None
-            
+
         elif self.color_attribute is not None:
             assert self.color_map is not None
             if isinstance(self.color_map, str):
                 assert self.color_vmin is not None and self.color_vmax is not None
-    
+
     def set_sprite_position(self, xy_position, sprite):
         x = self.scale_x(xy_position[0])
         y = self.scale_y(xy_position[1])
@@ -107,7 +108,7 @@ class Artist:
             sprite.color = self.color
         else:
             sprite.color = self.color_dict[int(getattr(entity, self.color_attribute))]
-            
+
     def add_sprite(self, entity):
         sprite = self.create_sprite(entity=entity)
         self.sprite_list.append(sprite)
@@ -119,7 +120,7 @@ class Artist:
         self.sprite_dict = {}
         for entity in self.selected_entities:
             self.add_sprite(entity=entity)
-    
+
     def create_sprite(self, entity):
         if self.shape == "rect":
             sprite = arcade.SpriteSolidColor(
@@ -128,29 +129,29 @@ class Artist:
             )
         elif self.shape == "circle":
             sprite = arcade.SpriteCircle(
-                radius=max(1, min(self.width, self.height) / 2), 
-                color=arcade.color.BABY_BLUE, # platzhalter
+                radius=max(1, min(self.width, self.height) / 2),
+                color=arcade.color.BABY_BLUE,  # platzhalter
             )
         else:
             raise ValueError("`shape` must be on of: 'rect', 'circle'.")
-        
+
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
             sprite.mesar_y_jitter = (self.model.random.random() - 0.5) * self.figure.cell_height
 
         self.set_sprite_position(
-            xy_position=self.get_xy_position(entity=entity), 
+            xy_position=self.get_xy_position(entity=entity),
             sprite=sprite,
-            )
+        )
         self.set_sprite_color(entity=entity, sprite=sprite)
         return sprite
 
     def select_entities(self) -> list:
         return [entity for entity in self.population if self.entity_selector(entity)]
-    
+
     def update(self):
         # TODO: use dirty_color and dirty_position to update only specific entity sprites
-        
+
         # if the set of entities is not fixed during the simulation
         if self.dynamic_population:
             # get all relevant entities
@@ -159,7 +160,7 @@ class Artist:
 
             # get all entities that were added previously
             entities_with_sprite = set(self.sprite_dict)
-            
+
             # get all entities which need a sprite
             add_list = updated_entities - entities_with_sprite
 
@@ -174,7 +175,7 @@ class Artist:
             for entity in remove_list:
                 sprite = self.sprite_dict.pop(entity)
                 self.sprite_list.remove(sprite)
-        
+
         # if both colors and positions change during the simulation
         if self.dynamic_color and self.dynamic_position:
             for entity, sprite in self.sprite_dict.items():
@@ -182,8 +183,8 @@ class Artist:
                 self.set_sprite_position(
                     xy_position=self.get_xy_position(entity),
                     sprite=sprite,
-                    )
-        
+                )
+
         # if only the colors can change
         elif self.dynamic_color:
             for entity, sprite in self.sprite_dict.items():
@@ -195,7 +196,7 @@ class Artist:
                 self.set_sprite_position(
                     xy_position=self.get_xy_position(entity),
                     sprite=sprite,
-                    )
+                )
 
 
 class CellAgentArtists(Artist):
@@ -208,12 +209,12 @@ class CellAgentArtists(Artist):
         color_vmax=None,
         shape="circle",
         size=1,
-        entity_selector = lambda entity: True,
+        entity_selector=lambda entity: True,
         jitter=False,
-        dynamic_color = True,
-        dynamic_position = True,
-        dynamic_population = True,
-        ):
+        dynamic_color=True,
+        dynamic_position=True,
+        dynamic_population=True,
+    ):
         super().__init__(
             color=color,
             color_attribute=color_attribute,
@@ -227,29 +228,21 @@ class CellAgentArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
-            )
-    
+        )
+
     def get_population(self):
         return self.model.agents
-    
+
     def get_xy_position(self, entity):
         return entity.cell.coordinate
-    
+
     def scale_x(self, x):
-        return (
-            x * self.figure.cell_width
-            + self.figure.x 
-            + self.figure.cell_width / 2
-        )
-    
+        return x * self.figure.cell_width + self.figure.x + self.figure.cell_width / 2
+
     def scale_y(self, y):
-        return (
-            y * self.figure.cell_height
-            + self.figure.y 
-            + self.figure.cell_height / 2
-        )
-    
-    
+        return y * self.figure.cell_height + self.figure.y + self.figure.cell_height / 2
+
+
 class CellArtists(Artist):
     def __init__(
         self,
@@ -260,12 +253,12 @@ class CellArtists(Artist):
         color_vmax=None,
         shape="rect",
         size=1,
-        entity_selector = lambda entity: True,
+        entity_selector=lambda entity: True,
         jitter=False,
-        dynamic_color = True,
-        dynamic_position = False,
-        dynamic_population = False,
-        ):
+        dynamic_color=True,
+        dynamic_position=False,
+        dynamic_population=False,
+    ):
         super().__init__(
             color=color,
             color_attribute=color_attribute,
@@ -279,27 +272,19 @@ class CellArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
-            )
-    
+        )
+
     def get_population(self):
         return self.model.grid
-    
+
     def get_xy_position(self, entity):
         return entity.coordinate
-    
+
     def scale_x(self, x):
-        return (
-            x * self.figure.cell_width
-            + self.figure.x 
-            + self.figure.cell_width / 2
-        )
-    
+        return x * self.figure.cell_width + self.figure.x + self.figure.cell_width / 2
+
     def scale_y(self, y):
-        return (
-            y * self.figure.cell_height
-            + self.figure.y 
-            + self.figure.cell_height / 2
-        )
+        return y * self.figure.cell_height + self.figure.y + self.figure.cell_height / 2
 
 
 class ContinuousSpaceAgentArtists(Artist):
@@ -312,12 +297,12 @@ class ContinuousSpaceAgentArtists(Artist):
         color_vmax=None,
         shape="circle",
         size=2,
-        entity_selector = lambda entity: True,
+        entity_selector=lambda entity: True,
         jitter=False,
-        dynamic_color = True,
-        dynamic_position = True,
-        dynamic_population = True,
-        ):
+        dynamic_color=True,
+        dynamic_position=True,
+        dynamic_population=True,
+    ):
         super().__init__(
             color=color,
             color_attribute=color_attribute,
@@ -331,23 +316,16 @@ class ContinuousSpaceAgentArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
-            )
-    
-    
+        )
+
     def get_population(self):
         return self.model.agents
-    
+
     def get_xy_position(self, entity):
         return entity.position
-    
+
     def scale_x(self, x):
-        return (
-            x * self.figure.cell_width
-            + self.figure.x 
-        )
-    
+        return x * self.figure.cell_width + self.figure.x
+
     def scale_y(self, y):
-        return (
-            y * self.figure.cell_height
-            + self.figure.y 
-        )
+        return y * self.figure.cell_height + self.figure.y
