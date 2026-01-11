@@ -43,6 +43,7 @@ solara = "*"
 networkx = "*"
 matplotlib = "*"
 altair = "*"
+ruff = "^0.14.11"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.1.0"
