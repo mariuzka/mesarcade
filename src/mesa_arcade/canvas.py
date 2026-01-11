@@ -12,7 +12,7 @@ class Canvas:
         controllers = [],
         window_width: int = 1200,
         window_title: str = "Mesa simulation",
-        target_tps: int = 30,
+        target_tps: int = 40,
         rendering_step: int = 1,
     ):
         window_height = int(window_width * 0.6)

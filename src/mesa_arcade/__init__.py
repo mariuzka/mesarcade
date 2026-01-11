@@ -1,13 +1,16 @@
 from .canvas import Canvas
 from .controller import NumController, CatController
-from .artist import CellArtist
-from .figure import ModelHistoryPlot, SpacePlot
+from .artist import CellAgentArtists, CellArtists, ContinuousSpaceAgentArtists
+from .figure import ModelHistoryPlot, GridSpacePlot, ContinuousSpacePlot
 
 __all__ = [
     "Canvas",
     "CatController",
-    "CellArtist",
+    "CellArtists",
+    "CellAgentArtists",
+    "ContinuousSpaceAgentArtists",
     "ModelHistoryPlot",
     "NumController",
-    "SpacePlot",
+    "GridSpacePlot",
+    "ContinuousSpacePlot",
 ]

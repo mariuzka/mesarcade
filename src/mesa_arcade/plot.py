@@ -1,4 +1,5 @@
 import arcade
+import numpy as np
 
 def rescale(value, old_min, old_max, new_min, new_max):
     old_range = old_max - old_min
@@ -8,9 +9,27 @@ def rescale(value, old_min, old_max, new_min, new_max):
     else:
         return (value - old_min) * new_range + new_max
 
+def rescale_array_column_inplace(
+    np_array: np.ndarray,
+    col: int,
+    old_min: float,
+    old_max: float,
+    new_min: float,
+    new_max: float,
+) -> None:
+    values = np_array[:, col]
+
+    old_range = old_max - old_min
+    new_range = new_max - new_min
+
+    if old_range > 0:
+        values[:] = (values - old_min) / old_range * new_range + new_max
+    else:
+        values[:] = (values - old_min) * new_range + new_max
+
     
 class _ModelHistoryPlot:
-    def __init__(self, y_attributes, step=1, legend=True):
+    def __init__(self, y_attributes, step=5, legend=True):
         
         if len(y_attributes) > 6:
             raise ValueError("Only 6 lines allowed!")
@@ -46,6 +65,7 @@ class _ModelHistoryPlot:
         self.plot_area_height = self.height * (0.7 - 0.025)
         
         self.data_dict = {y_attr: [] for y_attr in self.y_attrs}
+        self.scaled_data_dict = {y_attr: [] for y_attr in self.y_attrs}
         self.min_y = 0
         self.max_y = 0
         self.min_x = 0
@@ -57,7 +77,6 @@ class _ModelHistoryPlot:
         # add legend
         if self.legend:
             self.create_legend()
-
     
     def create_plot_area(self):
         background = arcade.shape_list.create_rectangle_filled(
@@ -80,7 +99,6 @@ class _ModelHistoryPlot:
         self.figure.shape_list.append(outline)
     
     def create_axis_ticks(self):
-        
         self.min_y_label = arcade.Text(
             text="",
             x=0,
@@ -131,17 +149,78 @@ class _ModelHistoryPlot:
             self.figure.shape_list.append(color_dot)
 
     def update(self):
-        if self.renderer.tick % self.step == 0 or self.renderer.tick <= 1:
-            for y_attr in self.y_attrs:
-                y = getattr(self.renderer.model, y_attr)
-                
-                if y > self.max_y:
-                    self.max_y = y
-                elif y < self.min_y:
-                    self.min_y = y
+        # get the current time step
+        tick = self.renderer.tick
 
-                self.data_dict[y_attr].append(y)
-            
+        if tick % self.step == 0 or tick <= 1:
+
+            # for each model attribute that has to be collected
+            for y_attr in self.y_attrs:
+
+                # check if the model has the attribute
+                # TODO: make this better. maybe ask at the start whether to use the datacollector or not
+                if hasattr(self.renderer.model, y_attr):
+                    y = getattr(self.renderer.model, y_attr)
+                
+                # if not 
+                else:
+                    # get the data from the datacollector
+                    y_data = self.renderer.model.datacollector.model_vars[y_attr]
+                    y = y_data[-1] if len(y_data) > 0 else None
+                
+                if y is not None and np.isfinite(y):
+                    if y > self.max_y:
+                        self.max_y = y
+                    elif y < self.min_y:
+                        self.min_y = y
+                    self.data_dict[y_attr].append((tick, y))
+                
+                #np_array = np.asarray(self.data_dict[y_attr], dtype=np.float32)
+
+                # rescale x values
+                # rescale_array_column_inplace(
+                #     np_array=np_array,
+                #     col=0,
+                #     old_min=0,
+                #     old_max=tick,
+                #     new_min=self.plot_area_x, 
+                #     new_max=self.plot_area_x+self.plot_area_width,
+                # )
+                
+                # # rescale y values
+                # rescale_array_column_inplace(
+                #     np_array=np_array,
+                #     col=1,
+                #     old_min=self.min_y, 
+                #     old_max=self.max_y, 
+                #     new_min=self.plot_area_y, 
+                #     new_max=self.plot_area_y+self.plot_area_height,
+                # )
+                # self.scaled_data_dict[y_attr] = np_array
+
+
+                # TODO: Optimize this with numpy
+                self.scaled_data_dict[y_attr] = [
+                    (
+                        rescale(
+                            value=x, 
+                            old_min=0, 
+                            old_max=tick, 
+                            new_min=self.plot_area_x, 
+                            new_max=self.plot_area_x+self.plot_area_width
+                            ) - self.plot_area_width,
+                        
+                        rescale(
+                            value=y, 
+                            old_min=self.min_y, 
+                            old_max=self.max_y, 
+                            new_min=self.plot_area_y, 
+                            new_max=self.plot_area_y+self.plot_area_height,
+                            ) - self.plot_area_height,
+                    ) 
+                    for x, y in self.data_dict[y_attr]
+                ]
+
             # draw the y-axis-labels
             str_min_y_label = str(round(self.min_y, 3))
             str_max_y_label = str(round(self.max_y, 3))
@@ -156,39 +235,9 @@ class _ModelHistoryPlot:
 
 
     def draw(self):
-        # TODO: daten für x/tick hinzufügen. so wird aktuell nicht beachtet, dass evtl. ticks übersprungen werden
-        # ein allgemeines x für alle y reicht.
-        # step dann wieder einführen, weil es schon was anderes ob daten nur alle paar ticks gesammelt werden
-        # oder ob das ding alle paar steps gerendert wird
         for i, y_attr in enumerate(self.y_attrs):
-            line = []
-            max_x = len(self.data_dict[y_attr])
-            
-            for x, y in enumerate(self.data_dict[y_attr]):
-                x_pos = rescale(
-                    value=x, 
-                    old_min=0, 
-                    old_max=max_x, 
-                    new_min=self.plot_area_x, 
-                    new_max=self.plot_area_x+self.plot_area_width
-                    ) - self.plot_area_width
-                
-                y_pos = rescale(
-                    value=y, 
-                    old_min=self.min_y, 
-                    old_max=self.max_y, 
-                    new_min=self.plot_area_y, 
-                    new_max=self.plot_area_y+self.plot_area_height,
-                    ) - self.plot_area_height
-                
-                line.append((x_pos, y_pos))
-            
-            arcade.draw_line_strip(point_list=line, color=self.color_list[i], line_width=2)
-            
-            if len(line) > 0:
-                arcade.draw_circle_filled(
-                    center_x=line[-1][0], 
-                    center_y=line[-1][1], 
-                    radius=3, 
-                    color=self.color_list[i],
-                    )
+            arcade.draw_line_strip(
+                self.scaled_data_dict[y_attr], 
+                color=self.color_list[i], 
+                line_width=2,
+                )

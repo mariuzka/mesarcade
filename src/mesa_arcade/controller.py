@@ -163,16 +163,7 @@ class ControllerButton(SmallButton):
             renderer=self.renderer,
             controller=self.controller,
         )
-        # setattr(
-        #     self.controller_buttons.target_object, 
-        #     self.parameter_name, 
-        #     new_parameter_value,
-        #     )
         self.controller_buttons.update()
-
-        # self.renderer.parameter_dict[self.parameter_name] = new_parameter_value
-
-        # self.controller.parameter_value = new_parameter_value
         
         # TODO: make this better
         if self.parameter_name== "target_tps":
@@ -180,7 +171,6 @@ class ControllerButton(SmallButton):
         elif self.parameter_name == "rendering_step":
             self.renderer.set_rendering_step(new_value=new_parameter_value)
             
-        
 
 class _ControllerButtons:
     def __init__(
@@ -274,7 +264,6 @@ class CatControllerButtons(_ControllerButtons):
             renderer=self.renderer,
             )
     
-
     def on_dropdown_change(self, dropdown_event):
         if self.parameter_name != "target_tps":
             self.target_object = self.renderer.model
@@ -424,16 +413,7 @@ class NumControllerButtons(_ControllerButtons):
             renderer=self.renderer,
             controller=self.controller,
         )
-
-        # setattr(
-        #     self.target_object, 
-        #     self.parameter_name, 
-        #     new_parameter_value,
-        #     )
-        # self.controller.parameter_value = new_parameter_value
-        # self.renderer.parameter_dict[self.parameter_name] = new_parameter_value
         self.update()
-        #self.renderer.set_fps(new_value=slider_event.new_value)
         
     def add_to_anchor(self):
         

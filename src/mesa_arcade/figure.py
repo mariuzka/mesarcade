@@ -5,10 +5,11 @@ from mesa_arcade.utils import parse_color
 from mesa_arcade.plot import _ModelHistoryPlot
 
 class Figure:
-    def __init__(self, components=[], background_color = "lightgray", title = None):
+    def __init__(self, space_attr_name: str, components=[], background_color = "lightgray", title = None):
         self.components = components
         self.background_color = parse_color(background_color)
         self.title = title
+        self.space_attr_name = space_attr_name
 
     def setup(self, x, y, width, height, renderer):
         self.renderer = renderer
@@ -17,10 +18,11 @@ class Figure:
 
         self.font_size = self.height * 0.04
         
-        self.n_grid_cols = self.renderer.model.grid.width
-        self.n_grid_rows = self.renderer.model.grid.height
-        self.cell_agent_width = self.width / self.n_grid_cols
-        self.cell_agent_height = self.height / self.n_grid_rows
+        if self.space_attr_name is not None:
+            self.space_width = getattr(self.renderer.model, self.space_attr_name).width
+            self.space_height = getattr(self.renderer.model, self.space_attr_name).height
+            self.cell_width = self.width / self.space_width
+            self.cell_height = self.height / self.space_height
 
         self.x = x
         self.y = y
@@ -31,6 +33,8 @@ class Figure:
 
         self.create_empty_figure()
         self.setup_components()
+
+
 
     def update(self):
         for component in self.components:
@@ -87,10 +91,10 @@ class ModelHistoryPlot(Figure):
             y_attributes=y_attributes,
             legend=legend,
         )
-        super().__init__(components=[plot], title=title)
+        super().__init__(components=[plot], title=title, space_attr_name=None)
 
-class SpacePlot(Figure):
-    def __init__(self, artists=[], background_color="lightgray", title=None):
+class GridSpacePlot(Figure):
+    def __init__(self, artists=[], background_color="white", title=None, space_attr_name="grid"):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
@@ -98,4 +102,17 @@ class SpacePlot(Figure):
             components=artists,
             background_color=background_color,
             title=title,
+            space_attr_name=space_attr_name,
+            )
+
+class ContinuousSpacePlot(Figure):
+    def __init__(self, artists=[], background_color="white", title=None, space_attr_name="space"):
+        if not isinstance(artists, (list, tuple)):
+            artists = [artists]
+
+        super().__init__(
+            components=artists,
+            background_color=background_color,
+            title=title,
+            space_attr_name=space_attr_name,
             )

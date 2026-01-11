@@ -207,7 +207,7 @@ class Renderer(arcade.View):
                 parameter_name="target_tps",
                 parameter_value=self.target_tps,
                 min_value=5,
-                max_value=55,
+                max_value=60,
                 step=5,
                 label="Ticks per second",
                 _target_object = self,
