@@ -24,8 +24,9 @@ agents = mesar.CellAgentArtists(
 ```
 
 <br>
+<br>
 
-# SpacePlots
+### SpacePlots
 
 SpacePlots are visual representations of certain space types in Mesa and plot the corresponding `Artist`s at their position.
 You can add/layer as many artists as you want to.
@@ -41,7 +42,7 @@ We could add other artists, too.
 ```python
 grid_space = mesar.GridSpacePlot(artists=[agents])
 ```
-
+<br>
 <br>
 
 ### HistoryPlots
