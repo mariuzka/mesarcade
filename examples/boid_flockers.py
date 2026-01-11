@@ -1,10 +1,10 @@
 from mesa.examples.basic.boid_flockers.model import BoidFlockers
 import mesa_arcade as mesar
 
-# agents
+# artists
 birds = mesar.ContinuousSpaceAgentArtists()
 
-# space
+# space plot
 space = mesar.ContinuousSpacePlot(artists=[birds])
 
 # controllers
@@ -20,5 +20,5 @@ canvas = mesar.Canvas(
     controllers=[population_size, speed, vision, separation],
     )
 
-# show window
+# show gui window
 canvas.show()
