@@ -2,11 +2,11 @@
 
 Mesa-arcade is a Python package which uses Arcade to visualize simulations built with Mesa.
 
-## Components
+# Components
 
 To visualize Mesa models, Mesa-arcade offers several components which can/must be combined by you:
 
-### Artists
+## Artists
 
 Artists are the visual representations of the entities in a mesa model.
 
@@ -23,7 +23,7 @@ agents = mesar.CellAgentArtists(
 )
 ```
 
-### SpacePlots
+## SpacePlots
 
 SpacePlots are visual representations of certain space types in Mesa and plot the corresponding `Artist`s at their position.
 You can add/layer as many artists as you want to.
@@ -41,7 +41,7 @@ grid_space = mesar.GridSpacePlot(artists=[agents])
 ```
 
 
-### HistoryPlots
+## HistoryPlots
 
 Line plots that plot (multiple) values as a function of the simulated time steps.
 
@@ -51,7 +51,7 @@ Line plots that plot (multiple) values as a function of the simulated time steps
 
 **Example**
 
-Let's add a `ModelHistorPlot` that visualizes the model attribute `happy`:
+Let's add a `ModelHistoryPlot` that visualizes the model attribute `happy` over time:
 
 ```python
 happy_plot = mesar.ModelHistoryPlot(y_attributes=["happy"])
@@ -64,11 +64,13 @@ Interactive controllers of model attributes / parameters.
 - `NumController`: A controller for metric parameters.
 - `CatController`: A controlelr for categorial paremeters.
 
-### Canvas
+**Example
+
+## Canvas
 
 The `Canvas` is the main window in which all components are placed.
 
-## Example
+# Example
 
 ```{python}
 import mesa_arcade as mesar
