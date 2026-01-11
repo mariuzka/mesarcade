@@ -2,7 +2,10 @@ from mesa.examples.basic.boid_flockers.model import BoidFlockers
 import mesa_arcade as mesar
 
 # artists
-birds = mesar.ContinuousSpaceAgentArtists()
+birds = mesar.ContinuousSpaceAgentArtists(
+    dynamic_color=False,
+    dynamic_population=False,
+    )
 
 # space plot
 space = mesar.ContinuousSpacePlot(artists=[birds])

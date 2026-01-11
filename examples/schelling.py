@@ -6,6 +6,7 @@ agents = mesar.CellAgentArtists(
     color_attribute="type",
     color_map={0: "blue", 1: "red"},
     shape="circle",
+    dynamic_population=False,
 )
 
 # space plot
