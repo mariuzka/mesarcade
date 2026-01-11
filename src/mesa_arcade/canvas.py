@@ -6,10 +6,10 @@ from mesa_arcade.renderer import Renderer
 
 class Canvas:
     def __init__(
-        self, 
-        model_class: mesa.Model,
-        plots = [],
-        controllers = [],
+        self,
+        model_class: type[mesa.Model],
+        plots=[],
+        controllers=[],
         window_width: int = 1200,
         window_title: str = "Mesa simulation",
         target_tps: int = 40,
@@ -18,16 +18,16 @@ class Canvas:
         window_height = int(window_width * 0.6)
 
         arcade.enable_timings()
-        
+
         # the arcade window object
         self.window = arcade.Window(
-            width=window_width, 
-            height=window_height, 
-            title=window_title, 
+            width=window_width,
+            height=window_height,
+            title=window_title,
             resizable=False,
             antialiasing=False,
-            )
-        
+        )
+
         # the arcade view object
         self.renderer = Renderer(
             model_class=model_class,
@@ -37,17 +37,16 @@ class Canvas:
             window_height=window_height,
             target_tps=target_tps,
             rendering_step=rendering_step,
-            )
-        
+        )
 
     def show(self) -> None:
         """Renders the canvas."""
 
         arcade.set_background_color(arcade.color.BLACK)
-        
-        # setup the renderer 
+
+        # setup the renderer
         self.renderer.setup()
-        
+
         # initialize the mesa model
         self.renderer.setup_model()
 

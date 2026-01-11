@@ -1,5 +1,6 @@
 import arcade
 
+
 def create_button_style(font_size):
     return {
         "normal": {
@@ -27,4 +28,3 @@ def create_button_style(font_size):
             "border": arcade.color.WHITE,
         },
     }
-
