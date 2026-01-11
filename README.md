@@ -1,6 +1,6 @@
 # Mesa-arcade
 
-*Ugly, but fast*
+*Ugly, but fast.*
 
 Mesa-arcade is a Python package that provides interactive, real-time visualizations for Mesa agent-based models using the Arcade game engine.  
 It enables fast, desktop-based GUIs with layered spatial plots, time-series charts, and live parameter controls.
