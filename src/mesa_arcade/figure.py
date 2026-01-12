@@ -2,7 +2,6 @@ import arcade
 from pyglet.graphics import Batch
 
 from mesa_arcade.utils import parse_color
-from mesa_arcade.plot import _ModelHistoryPlot
 
 
 class Figure:
@@ -83,39 +82,4 @@ class Figure:
         self.shape_list.append(outline)
 
 
-class ModelHistoryPlot(Figure):
-    def __init__(self, y_attributes, legend=True, title=None):
-        if not isinstance(y_attributes, (list, tuple)):
-            y_attributes = [y_attributes]
 
-        plot = _ModelHistoryPlot(
-            y_attributes=y_attributes,
-            legend=legend,
-        )
-        super().__init__(components=[plot], title=title, space_attr_name=None)
-
-
-class GridSpacePlot(Figure):
-    def __init__(self, artists=[], background_color="white", title=None, space_attr_name="grid"):
-        if not isinstance(artists, (list, tuple)):
-            artists = [artists]
-
-        super().__init__(
-            components=artists,
-            background_color=background_color,
-            title=title,
-            space_attr_name=space_attr_name,
-        )
-
-
-class ContinuousSpacePlot(Figure):
-    def __init__(self, artists=[], background_color="white", title=None, space_attr_name="space"):
-        if not isinstance(artists, (list, tuple)):
-            artists = [artists]
-
-        super().__init__(
-            components=artists,
-            background_color=background_color,
-            title=title,
-            space_attr_name=space_attr_name,
-        )

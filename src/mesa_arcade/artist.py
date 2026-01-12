@@ -11,16 +11,16 @@ class Artist:
         self,
         color: str | tuple | list | None = "black",
         color_attribute: str | None = None,
-        color_map: str = "bwr",
+        color_map: str | None = "bwr",
         color_vmin: float | None = None,
-        color_vmax=None,
-        shape="rect",
-        size=1,
-        entity_selector=lambda entity: True,
-        jitter=False,
-        dynamic_color=True,
-        dynamic_position=True,
-        dynamic_population=True,
+        color_vmax: float | None = None,
+        shape: str = "rect",
+        size: float = 1,
+        entity_selector = lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
     ):
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
@@ -200,20 +200,23 @@ class Artist:
 
 
 class CellAgentArtists(Artist):
+    """
+    A visual representation of CellAgents.
+    """
     def __init__(
         self,
-        color: str | tuple | list | None = "blue",
+        color: str | tuple | list | None = "black",
         color_attribute: str | None = None,
-        color_map: str = "bwr",
+        color_map: str | None = "bwr",
         color_vmin: float | None = None,
-        color_vmax=None,
-        shape="circle",
-        size=1,
-        entity_selector=lambda entity: True,
-        jitter=False,
-        dynamic_color=True,
-        dynamic_position=True,
-        dynamic_population=True,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 1,
+        entity_selector = lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
     ):
         super().__init__(
             color=color,
@@ -244,20 +247,23 @@ class CellAgentArtists(Artist):
 
 
 class CellArtists(Artist):
+    """
+    A visual representation of Cells.
+    """
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
+        color: str | tuple | list | None = "grey",
         color_attribute: str | None = None,
-        color_map: str = "bwr",
+        color_map: str | None = "bwr",
         color_vmin: float | None = None,
-        color_vmax=None,
-        shape="rect",
-        size=1,
-        entity_selector=lambda entity: True,
-        jitter=False,
-        dynamic_color=True,
-        dynamic_position=False,
-        dynamic_population=False,
+        color_vmax: float | None = None,
+        shape: str = "rect",
+        size: float = 1,
+        entity_selector = lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = False,
+        dynamic_population: bool = True,
     ):
         super().__init__(
             color=color,
@@ -288,20 +294,23 @@ class CellArtists(Artist):
 
 
 class ContinuousSpaceAgentArtists(Artist):
+    """
+    A visual representation of ContinuousSpaceAgents.
+    """
     def __init__(
         self,
         color: str | tuple | list | None = "black",
         color_attribute: str | None = None,
-        color_map: str = "bwr",
+        color_map: str | None = "bwr",
         color_vmin: float | None = None,
-        color_vmax=None,
-        shape="circle",
-        size=2,
-        entity_selector=lambda entity: True,
-        jitter=False,
-        dynamic_color=True,
-        dynamic_position=True,
-        dynamic_population=True,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 2,
+        entity_selector = lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
     ):
         super().__init__(
             color=color,

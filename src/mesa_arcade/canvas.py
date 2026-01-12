@@ -31,7 +31,8 @@ class Canvas:
                 The list of controllers that should be placed in the canvas. 
                 Defaults to [].
             window_width (int, optional): 
-                The width of the canvas window in pixels. 
+                The width of the canvas window in pixels.
+                Determines the height of the canvas.
                 Defaults to 1200.
             window_title (str, optional):
                 The title of the canvas. 
