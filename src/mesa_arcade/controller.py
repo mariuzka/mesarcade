@@ -141,7 +141,7 @@ class ControllerButton(SmallButton):
         self.text = "+" if self.increase else "-"
 
     def on_click(self, event):
-        if self.parameter_name not in ["target_tps", "rendering_step"]:
+        if self.parameter_name not in ["target_fps", "rendering_step"]:
             self.controller_buttons.target_object = self.renderer.model
 
         current_value = get_current_parameter_value(
@@ -168,7 +168,7 @@ class ControllerButton(SmallButton):
         self.controller_buttons.update()
 
         # TODO: make this better
-        if self.parameter_name == "target_tps":
+        if self.parameter_name == "target_fps":
             self.renderer.set_fps(new_value=new_parameter_value)
         elif self.parameter_name == "rendering_step":
             self.renderer.set_rendering_step(new_value=new_parameter_value)
@@ -267,7 +267,7 @@ class CatControllerButtons(_ControllerButtons):
         )
 
     def on_dropdown_change(self, dropdown_event):
-        if self.parameter_name != "target_tps":
+        if self.parameter_name != "target_fps":
             self.target_object = self.renderer.model
 
         new_parameter_value = dropdown_event.new_value
@@ -402,7 +402,7 @@ class NumControllerButtons(_ControllerButtons):
         self.slider.value = self.current_value
 
     def on_slider_change(self, slider_event):
-        if self.parameter_name != "target_tps":
+        if self.parameter_name != "target_fps":
             self.target_object = self.renderer.model
 
         new_parameter_value = slider_event.new_value

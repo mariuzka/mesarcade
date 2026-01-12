@@ -1,5 +1,6 @@
 import arcade
 import numpy as np
+from mesa_arcade.figure import Figure
 
 
 def rescale(value, old_min, old_max, new_min, new_max):
@@ -242,3 +243,15 @@ class _ModelHistoryPlot:
                 color=self.color_list[i],
                 line_width=2,
             )
+
+
+class ModelHistoryPlot(Figure):
+    def __init__(self, y_attributes, legend=True, title=None):
+        if not isinstance(y_attributes, (list, tuple)):
+            y_attributes = [y_attributes]
+
+        plot = _ModelHistoryPlot(
+            y_attributes=y_attributes,
+            legend=legend,
+        )
+        super().__init__(components=[plot], title=title, space_attr_name=None)

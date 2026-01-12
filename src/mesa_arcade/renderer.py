@@ -15,7 +15,7 @@ class Renderer(arcade.View):
         controllers: list,
         window_width: int,
         window_height: int,
-        target_tps: int,
+        target_fps: int,
         rendering_step: int,
     ):
         super().__init__()
@@ -26,7 +26,7 @@ class Renderer(arcade.View):
         self.parameter_dict = {}
         self.window_width = window_width
         self.window_height = window_height
-        self.target_tps = target_tps
+        self.target_fps = target_fps
         self.rendering_step = rendering_step
 
     def setup(self):
@@ -69,7 +69,7 @@ class Renderer(arcade.View):
         self.add_default_buttons()
 
         # set initial target fps
-        self.set_fps(new_value=self.target_tps)
+        self.set_fps(new_value=self.target_fps)
 
     def update_parameter_dict(self) -> None:
         for controller in self.controllers:
@@ -85,7 +85,7 @@ class Renderer(arcade.View):
         self.update_parameter_dict()
 
         # remove the fps parameter
-        self.parameter_dict.pop("target_tps", None)
+        self.parameter_dict.pop("target_fps", None)
         self.parameter_dict.pop("rendering_step", None)
 
         # create a new model instance with the current parameter setting
@@ -148,7 +148,7 @@ class Renderer(arcade.View):
 
     def set_target_objects_of_controllers(self):
         for i, controller in enumerate(self.controllers):
-            if controller.parameter_name not in ["target_tps", "rendering_step"]:
+            if controller.parameter_name not in ["target_fps", "rendering_step"]:
                 controller.buttons.target_object = self.model
 
     def setup_controllers(self) -> None:
@@ -207,8 +207,8 @@ class Renderer(arcade.View):
 
     def add_fps_buttons(self):
         self.fps_buttons = NumController(
-            parameter_name="target_tps",
-            parameter_value=self.target_tps,
+            parameter_name="target_fps",
+            parameter_value=self.target_fps,
             min_value=5,
             max_value=60,
             step=5,
@@ -221,8 +221,8 @@ class Renderer(arcade.View):
         self.fps_buttons.buttons.slider.on_change = self.on_fps_change
 
     def set_fps(self, new_value):
-        self.target_tps = int(new_value)
-        self.window.set_update_rate(1 / self.target_tps)
+        self.target_fps = int(new_value)
+        self.window.set_update_rate(1 / self.target_fps)
         self.fps_buttons.buttons.update()
 
     def on_fps_change(self, slider_event):
