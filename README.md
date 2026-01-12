@@ -21,6 +21,8 @@ Artists are the visual representations of the entities in a mesa model.
 
 **Example:**
 
+Let's create a visual representation for our CellAgents. We map the agent attribute `type` to the colors blue and red.
+
 ```python
 agents = mesar.CellAgentArtists(
     color_attribute="type",
