@@ -5,16 +5,44 @@ from mesa_arcade.renderer import Renderer
 
 
 class Canvas:
+    """The main GUI window."""
+
     def __init__(
         self,
         model_class: type[mesa.Model],
-        plots=[],
-        controllers=[],
+        plots: list = [],
+        controllers: list = [],
         window_width: int = 1200,
-        window_title: str = "Mesa simulation",
-        target_tps: int = 40,
+        window_title: str = "Mesa-arcade",
+        target_fps: int = 40,
         rendering_step: int = 1,
-    ):
+    ) -> None:
+        """"
+        Creates a new canvas instance.
+
+        Args:
+            model_class (type[mesa.Model]): 
+                The mesa model class.
+            plots (list, optional): 
+                The list of controllers that should be placed in the canvas. 
+                Currently, the maximum number of plots is 4.
+                Defaults to [].
+            controllers (list, optional): 
+                The list of controllers that should be placed in the canvas. 
+                Defaults to [].
+            window_width (int, optional): 
+                The width of the canvas window in pixels. 
+                Defaults to 1200.
+            window_title (str, optional):
+                The title of the canvas. 
+                Defaults to "Mesa-arcade".
+            target_fps (int, optional):
+                The number of frames per second (FPS) that the animations should show. 
+                Defaults to 40.
+            rendering_step (int, optional):
+                The number of simulation steps until the visualizations are rerendered. 
+                Defaults to 1.
+        """
         window_height = int(window_width * 0.6)
 
         arcade.enable_timings()
@@ -35,7 +63,7 @@ class Canvas:
             controllers=controllers,
             window_width=window_width,
             window_height=window_height,
-            target_tps=target_tps,
+            target_fps=target_fps,
             rendering_step=rendering_step,
         )
 
