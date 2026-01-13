@@ -50,8 +50,8 @@ class Renderer(arcade.View):
         self.atomic_width = round(self.window_width / 36)
         self.atomic_height = round(self.window_height / 36)
 
-        self.small_button_width = self.atomic_width
-        self.small_button_height = self.atomic_height
+        self.small_button_width = self.atomic_width * 0.6
+        self.small_button_height = self.atomic_height * 0.8
         self.big_button_width = round(self.atomic_width * 2)
         self.big_button_height = round(self.atomic_height * 2)
 
@@ -109,13 +109,13 @@ class Renderer(arcade.View):
 
             fig_1 = self.figures[0]
             fig_1_x = (
-                self.window_width / 2 - fig_width / 2 - fig_width / 4 - self.atomic_height * 3
+                self.window_width / 2 - fig_width / 2 - fig_width / 4 - self.atomic_height * 1.5
             )
             fig_1_y = self.window_height / 2 - fig_width / 2
             fig_1.setup(x=fig_1_x, y=fig_1_y, width=fig_width, height=fig_height, renderer=self)
 
             fig_2 = self.figures[1]
-            fig_2_x = self.window_width / 2 + fig_width / 4 - self.atomic_height * 2
+            fig_2_x = self.window_width / 2 + fig_width / 4 - self.atomic_height * 0.5
             fig_2_y = self.window_height / 2 - fig_width / 2
             fig_2.setup(x=fig_2_x, y=fig_2_y, width=fig_width, height=fig_height, renderer=self)
 

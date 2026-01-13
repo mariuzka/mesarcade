@@ -52,12 +52,12 @@ canvas = mesar.Canvas(
     plots=[
         space_plot, 
         price_plot, 
-        traders_plot,
+        #traders_plot,
     ],
     controllers=[
         initial_population,
-        #endowment_min,
-        #endowment_max,
+        endowment_min,
+        endowment_max,
         metabolism_min,
         metabolism_max,
         enable_trade,
