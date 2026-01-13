@@ -46,7 +46,7 @@ class _Controller:
         self.renderer = None
 
     def calculate_align_y(self, i):
-        return round(-(i * (self.renderer.atomic_height * 3.9)) - self.renderer.atomic_height * 2)
+        return round(-(i * (self.renderer.atomic_height * 3.1)) - self.renderer.atomic_height * 2)
 
 
 class CatController(_Controller):
@@ -244,7 +244,7 @@ class CatControllerButtons(_ControllerButtons):
             font_size=int(self.renderer.atomic_height / 2),
             font_name="arial",
         )
-        FONT_SIZE = int(self.renderer.atomic_height / 1.3)
+        FONT_SIZE = int(self.renderer.atomic_height / 2)
         primary_style = create_button_style(font_size=FONT_SIZE)
         active_style = create_button_style(font_size=FONT_SIZE)
         dropdown_style = create_button_style(font_size=FONT_SIZE)
@@ -252,7 +252,8 @@ class CatControllerButtons(_ControllerButtons):
         self.dropdown = arcade.gui.UIDropdown(
             default=str(value),
             options=[str(option) for option in self.options],
-            width=self.renderer.atomic_width * 6,
+            width=self.renderer.atomic_width * 7,
+            height=self.renderer.atomic_height,
             primary_style=primary_style,
             active_style=active_style,
             dropdown_style=dropdown_style,
@@ -363,7 +364,7 @@ class NumControllerButtons(_ControllerButtons):
             min_value=self.min_value,
             max_value=self.max_value,
             step=self.step,
-            width=self.renderer.atomic_width * 6,
+            width=self.renderer.atomic_width * 7,
         )
         self.slider.on_change = self.on_slider_change
 
@@ -418,38 +419,40 @@ class NumControllerButtons(_ControllerButtons):
         self.update()
 
     def add_to_anchor(self):
+        ALIGN_X = self.renderer.atomic_width
+
         self.renderer.anchor.add(
             self.label,
             anchor_x="left",
             anchor_y="top",
-            align_x=int(self.renderer.atomic_width),
+            align_x=ALIGN_X,
             align_y=int(self.align_y + self.renderer.atomic_height),
         )
         self.renderer.anchor.add(
             self.decrease_button,
             anchor_x="left",
             anchor_y="top",
-            align_x=int(self.renderer.atomic_width),
-            align_y=int(self.align_y),
+            align_x=ALIGN_X + self.renderer.atomic_width * 4,
+            align_y=self.align_y + self.renderer.atomic_height,
         )
         self.renderer.anchor.add(
             self.increase_button,
             anchor_x="left",
             anchor_y="top",
-            align_x=int(self.renderer.atomic_width * 2.5),
-            align_y=int(self.align_y),
+            align_x=ALIGN_X + self.renderer.atomic_width * 4 + self.renderer.small_button_width,
+            align_y=self.align_y + self.renderer.atomic_height,
         )
         self.renderer.anchor.add(
             self.label_current_value,
             anchor_x="left",
             anchor_y="top",
-            align_x=int(self.renderer.atomic_width + self.renderer.atomic_width * 3),
-            align_y=int(self.align_y - self.increase_button.height * 0.25),
+            align_x=ALIGN_X + self.renderer.atomic_width * 6,
+            align_y=self.align_y + self.renderer.atomic_height,
         )
         self.renderer.anchor.add(
             self.slider,
             anchor_x="left",
             anchor_y="top",
-            align_x=int(self.renderer.atomic_width),
-            align_y=int(self.align_y - self.renderer.atomic_height),
+            align_x=ALIGN_X,
+            align_y=self.align_y + self.renderer.atomic_height * 0.19,
         )

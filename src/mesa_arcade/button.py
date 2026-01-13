@@ -7,7 +7,7 @@ from mesa_arcade.styles import create_button_style
 class SmallButton(arcade.gui.UIFlatButton):
     def __init__(self, renderer):
         super().__init__(
-            style=create_button_style(font_size=renderer.big_button_height / 2.5),
+            style=create_button_style(font_size=renderer.small_button_height / 1.5),
         )
         self.renderer = renderer
         self.height = self.renderer.small_button_height
@@ -77,19 +77,19 @@ class DefaultButtons:
             anchor_x="left",
             anchor_y="top",
             align_y=self.align_y,
-            align_x=self.renderer.atomic_width,
+            align_x=self.renderer.atomic_width * 1.5,
         )
         self.renderer.anchor.add(
             self.step_button,
             anchor_x="left",
             anchor_y="top",
             align_y=self.align_y,
-            align_x=self.renderer.atomic_width * 3,
+            align_x=self.renderer.atomic_width * 3.5,
         )
         self.renderer.anchor.add(
             self.reset_button,
             anchor_x="left",
             anchor_y="top",
             align_y=self.align_y,
-            align_x=self.renderer.atomic_width * 5,
+            align_x=self.renderer.atomic_width * 5.5,
         )
