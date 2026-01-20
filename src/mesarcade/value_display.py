@@ -61,13 +61,12 @@ class ValueDisplay:
     def get_value_from_model(self):
         return str(getattr(self.renderer.model, self.model_attribute))
 
-    def update(self, new_value = None):
-        if self.renderer.tick % self.update_step == 0:
+    def update(self, new_value = None, force_update = False):
+        if self.renderer.tick % self.update_step == 0 or force_update:
             new_value = self.get_value_from_model() if new_value is None else new_value
             if new_value != self.current_value:
                 self.current_value = new_value
                 self.value_element.text = new_value
             
-    
     def draw(self):
         self.text_batch.draw()

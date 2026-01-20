@@ -40,8 +40,10 @@ class PlayButton(BigButton):
         self.text = "Play" if not self.renderer.play else "Pause"
 
     def on_click(self, event):
+        self.renderer.update_value_displays(force_update=True)
         self.renderer.play = not self.renderer.play
         self.get_text()
+        
 
 
 class StepButton(BigButton):
@@ -51,8 +53,8 @@ class StepButton(BigButton):
     def on_click(self, event):
         self.renderer.model.step()
         self.renderer.tick += 1
-        for figure in self.renderer.figures:
-            figure.update()
+        self.renderer.update_figures()
+        self.renderer.update_value_displays(force_update=True)
 
 
 class ResetButton(BigButton):
@@ -61,6 +63,7 @@ class ResetButton(BigButton):
 
     def on_click(self, event):
         self.renderer.setup_model()
+        self.renderer.update_value_displays(force_update=True)
 
 
 class DefaultButtons:
