@@ -1,7 +1,9 @@
-# mesarcade
+# Mesarcade
 
-mesarcade is a Python package that provides **interactive, real-time visualizations** for Mesa agent-based models using the Arcade game engine.  
-It enables fast, desktop-based GUIs with layered spatial plots, time-series charts, and live parameter controls.
+**Mesa + Arcade**
+
+Mesarcade is a Python package that provides fast, interactive visualizations of Mesa agent-based models using Python Arcade.  
+
 
 ⚠️ mesarcade is under active development. APIs may change.
 
@@ -18,6 +20,8 @@ Artists are the visual representations of the entities in a mesa model.
 - `ContinuousSpaceAgentArtists`: A visual representation for a set of `mesa.ContinuousSpaceAgent`s.
 
 **Example:**
+
+Let's create a visual representation for our CellAgents. We map the agent attribute `type` to the colors blue and red.
 
 ```python
 agents = mesar.CellAgentArtists(
