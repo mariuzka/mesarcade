@@ -5,14 +5,17 @@ import mesa
 
 from mesarcade.button import DefaultButtons
 from mesarcade.controller import NumController
+from mesarcade.utils import parse_color
+from mesarcade.value_display import ValueDisplay
 
 
 class Renderer(arcade.View):
     def __init__(
         self,
-        model_class: mesa.model,
+        model_class: type[mesa.model],
         figures: list,
         controllers: list,
+        value_displays: list,
         window_width: int,
         window_height: int,
         target_fps: int,
@@ -23,6 +26,7 @@ class Renderer(arcade.View):
         self.model_class = model_class
         self.figures = figures
         self.controllers = controllers
+        self.value_displays = value_displays
         self.parameter_dict = {}
         self.window_width = window_width
         self.window_height = window_height
@@ -43,7 +47,7 @@ class Renderer(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.manager.add(self.anchor)
-        self.background_color = (235, 236, 238)
+        self.background_color = parse_color("whitesmoke")
         self.font_color = (45, 45, 50)
 
         # calculate window properties
@@ -61,9 +65,7 @@ class Renderer(arcade.View):
         self.setup_model()
         self.setup_controllers()
 
-        # add default buttons & displays
-        self.add_fps_display()
-        self.add_tick_counter_display()
+        # add default buttons
         self.add_fps_buttons()
         self.add_rendering_step_buttons()
         self.add_default_buttons()
@@ -92,6 +94,7 @@ class Renderer(arcade.View):
         self.model = self.model_class(**self.parameter_dict)
 
         self.setup_figures()
+        self.setup_value_displays()
 
     def setup_figures(self):
         if len(self.figures) == 1:
@@ -156,39 +159,31 @@ class Renderer(arcade.View):
             controller.renderer = self
             controller.setup(i=i + 3)
         self.set_target_objects_of_controllers()
+    
+    def draw_value_displays(self) -> None:
+        self.tick_display.draw()
+        self.fps_display.draw()
+        for value_display in self.value_displays:
+            value_display.draw()
+
+    def update_value_displays(self, force_update=False) -> None:
+        self.tick_display.update(new_value=self.tick, force_update=force_update)
+        self.fps_display.update(new_value=int(arcade.get_fps(60)), force_update=force_update)
+        for value_display in self.value_displays:
+            value_display.update(force_update=force_update)
+        
+    def setup_value_displays(self) -> None:
+        self.tick_display = ValueDisplay(label="Tick", update_step=10)
+        self.tick_display.setup(i=1, renderer=self, initial_value=self.tick)
+
+        self.fps_display = ValueDisplay(label="FPS", update_step=10)
+        self.fps_display.setup(i=2, renderer=self, initial_value=int(arcade.get_fps(60)))
+
+        for i, value_display in enumerate(self.value_displays):
+            value_display.setup(i=i+3, renderer=self)
 
     def add_default_buttons(self):
         DefaultButtons(renderer=self).add_to_anchor()
-
-    def add_tick_counter_display(self):
-        self.tick_counter_text = arcade.gui.widgets.text.UILabel(
-            text=f"tick: {self.tick}",
-            text_color=arcade.color.BLACK,
-            font_size=self.font_size,
-        )
-        self.anchor.add(
-            self.tick_counter_text,
-            anchor_x="left",
-            anchor_y="top",
-            align_x=int(self.atomic_width * 33),
-            align_y=int(-self.atomic_height - self.big_button_height * 0.25),
-        )
-
-    def add_fps_display(self):
-        self.fps_text = arcade.gui.widgets.text.UILabel(
-            text=f"FPS: {int(arcade.get_fps(60))}",
-            text_color=arcade.color.BLACK,
-            font_size=self.font_size,
-        )
-        self.anchor.add(
-            self.fps_text,
-            anchor_x="left",
-            anchor_y="top",
-            align_x=int(self.atomic_width * 33),
-            align_y=int(
-                -self.atomic_height * 3 - self.atomic_height * 0.25,
-            ),
-        )
 
     def add_rendering_step_buttons(self):
         self.rendering_step_buttons = NumController(
@@ -234,20 +229,23 @@ class Renderer(arcade.View):
     def on_rendering_step_change(self, slider_event):
         self.rendering_step_buttons.buttons.update()
         self.set_rendering_step(slider_event.new_value)
+    
+    def draw_figures(self):
+        for figure in self.figures:
+            figure.draw()
+    
+    def update_figures(self):
+        for figure in self.figures:
+            figure.update()
 
     def on_draw(self):
         """Render the screen."""
 
         self.clear()
-
-        for figure in self.figures:
-            figure.draw()
+        self.draw_figures()
+        self.draw_value_displays()
 
         self.manager.draw()
-
-        # draw fps & tick counter
-        self.fps_text.text = f"FPS: {int(arcade.get_fps(60))}"
-        self.tick_counter_text.text = f"tick: {self.tick}"
 
     def on_update(self, delta_time):
         if self.play:
@@ -255,5 +253,5 @@ class Renderer(arcade.View):
             self.tick += 1
 
             if self.tick % self.rendering_step == 0:
-                for figure in self.figures:
-                    figure.update()
+                self.update_figures()
+                self.update_value_displays()

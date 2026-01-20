@@ -3,6 +3,7 @@ from .controller import NumController, CatController
 from .artist import CellAgentArtists, CellArtists, ContinuousSpaceAgentArtists
 from .history_plot import ModelHistoryPlot
 from .space_plot import GridSpacePlot, ContinuousSpacePlot
+from .value_display import ValueDisplay
 
 __all__ = [
     "Canvas",
@@ -14,4 +15,5 @@ __all__ = [
     "NumController",
     "GridSpacePlot",
     "ContinuousSpacePlot",
+    "ValueDisplay"
 ]

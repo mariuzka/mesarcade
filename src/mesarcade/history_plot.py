@@ -47,7 +47,7 @@ class _ModelHistoryPlot:
             arcade.color.RED,
             arcade.color.PINK,
             arcade.color.PURPLE,
-        ]
+            ]
 
     def setup(self, figure, renderer):
         self.figure = figure
@@ -86,7 +86,7 @@ class _ModelHistoryPlot:
             center_y=self.plot_area_y + self.plot_area_height / 2,
             width=self.plot_area_width,
             height=self.plot_area_height,
-            color=arcade.color.GRAY,
+            color=arcade.color.WHITE,
         )
         self.figure.shape_list.append(background)
 
@@ -96,7 +96,7 @@ class _ModelHistoryPlot:
             width=self.plot_area_width,
             height=self.plot_area_height,
             color=arcade.color.BLACK,
-            border_width=1,
+            border_width=2,
         )
         self.figure.shape_list.append(outline)
 
@@ -153,11 +153,14 @@ class _ModelHistoryPlot:
         # get the current time step
         tick = self.renderer.tick
 
+        # check if it is time to update
         if tick % self.step == 0 or tick <= 1:
+            
             # for each model attribute that has to be collected
             for y_attr in self.y_attrs:
+                
                 # check if the model has the attribute
-                # TODO: make this better. maybe ask at the start whether to use the datacollector or not
+                # TODO: Improve this. Maybe ask whether to use the datacollector or not.
                 if hasattr(self.renderer.model, y_attr):
                     y = getattr(self.renderer.model, y_attr)
 
@@ -167,6 +170,7 @@ class _ModelHistoryPlot:
                     y_data = self.renderer.model.datacollector.model_vars[y_attr]
                     y = y_data[-1] if len(y_data) > 0 else None
 
+                # update min and max values
                 if y is not None and np.isfinite(y):
                     if y > self.max_y:
                         self.max_y = y
@@ -174,29 +178,7 @@ class _ModelHistoryPlot:
                         self.min_y = y
                     self.data_dict[y_attr].append((tick, y))
 
-                # np_array = np.asarray(self.data_dict[y_attr], dtype=np.float32)
-
-                # rescale x values
-                # rescale_array_column_inplace(
-                #     np_array=np_array,
-                #     col=0,
-                #     old_min=0,
-                #     old_max=tick,
-                #     new_min=self.plot_area_x,
-                #     new_max=self.plot_area_x+self.plot_area_width,
-                # )
-
-                # # rescale y values
-                # rescale_array_column_inplace(
-                #     np_array=np_array,
-                #     col=1,
-                #     old_min=self.min_y,
-                #     old_max=self.max_y,
-                #     new_min=self.plot_area_y,
-                #     new_max=self.plot_area_y+self.plot_area_height,
-                # )
-                # self.scaled_data_dict[y_attr] = np_array
-
+                # Rescale the data
                 # TODO: Optimize this with numpy
                 self.scaled_data_dict[y_attr] = [
                     (
@@ -220,16 +202,15 @@ class _ModelHistoryPlot:
                     for x, y in self.data_dict[y_attr]
                 ]
 
-            # draw the y-axis-labels
+            # update lower y_label
             str_min_y_label = str(round(self.min_y, 3))
-            str_max_y_label = str(round(self.max_y, 3))
-
             if self.min_y_label.text != str_min_y_label:
                 self.min_y_label.text = str_min_y_label
                 self.min_y_label.x = (
                     self.plot_area_x - (len(str_min_y_label) + 1) * self.font_size / 1.5
                 )
-
+            # update upper y_label
+            str_max_y_label = str(round(self.max_y, 3))
             if self.max_y_label != str_max_y_label:
                 self.max_y_label.text = str_max_y_label
                 self.max_y_label.x = (

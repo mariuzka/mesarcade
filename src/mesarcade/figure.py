@@ -6,7 +6,7 @@ from mesarcade.utils import parse_color
 
 class Figure:
     def __init__(
-        self, space_attr_name: str, components=[], background_color="lightgray", title=None
+        self, space_attr_name: str, components=[], background_color="whitesmoke", title=None
     ):
         self.components = components
         self.background_color = parse_color(background_color)
@@ -78,5 +78,6 @@ class Figure:
             width=self.width,
             height=self.height,
             color=arcade.color.BLACK,
+            border_width=2,
         )
         self.shape_list.append(outline)

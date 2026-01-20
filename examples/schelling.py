@@ -7,6 +7,7 @@ agents = mesar.CellAgentArtists(
     color_map={0: "blue", 1: "red"},
     shape="circle",
     dynamic_population=False,
+    
 )
 
 # space plot
@@ -14,6 +15,9 @@ space = mesar.GridSpacePlot(artists=agents)
 
 # line plot
 happy_plot = mesar.ModelHistoryPlot(y_attributes=["happy"])
+
+# value display
+happy_value = mesar.ValueDisplay(model_attribute="happy", label="Happy agents")
 
 # controllers
 density = mesar.NumController("density", 0.8, 0.1, 0.9, 0.1)
@@ -27,6 +31,7 @@ canvas = mesar.Canvas(
     model_class=Schelling,
     plots=[space, happy_plot],
     controllers=[density, minority_pc, homophily, width, height],
+    value_displays=[happy_value],
 )
 
 # show gui window
