@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.colors
 import random
 
-from mesa_arcade.utils import parse_color
+from mesarcade.utils import parse_color
 
 
 class Artist:

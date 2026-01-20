@@ -1,7 +1,7 @@
 import arcade
 from pyglet.graphics import Batch
 
-from mesa_arcade.utils import parse_color
+from mesarcade.utils import parse_color
 
 
 class Figure:

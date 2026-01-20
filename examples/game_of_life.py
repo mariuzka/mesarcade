@@ -1,4 +1,4 @@
-import mesa_arcade as mesar
+import mesarcade as mesar
 from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
 
 # artists

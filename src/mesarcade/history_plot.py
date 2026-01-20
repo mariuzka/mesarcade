@@ -1,6 +1,6 @@
 import arcade
 import numpy as np
-from mesa_arcade.figure import Figure
+from mesarcade.figure import Figure
 
 
 def rescale(value, old_min, old_max, new_min, new_max):

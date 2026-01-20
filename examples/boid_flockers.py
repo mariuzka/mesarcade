@@ -1,5 +1,5 @@
 from mesa.examples.basic.boid_flockers.model import BoidFlockers
-import mesa_arcade as mesar
+import mesarcade as mesar
 
 # artists
 birds = mesar.ContinuousSpaceAgentArtists(

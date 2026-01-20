@@ -1,4 +1,4 @@
-from mesa_arcade.figure import Figure
+from mesarcade.figure import Figure
 
 
 class GridSpacePlot(Figure):
