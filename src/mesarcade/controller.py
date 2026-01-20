@@ -2,8 +2,8 @@ import arcade
 import arcade.gui
 import arcade.gui.widgets.text
 
-from mesa_arcade.styles import create_button_style
-from mesa_arcade.button import SmallButton
+from mesarcade.styles import create_button_style
+from mesarcade.button import SmallButton
 
 
 def round_parameter_value(value, step):

@@ -1,15 +1,15 @@
-# Mesa-arcade
+# Mesarcade
 
-*Ugly, but fast.*
+**Mesa + Arcade**
 
-Mesa-arcade is a Python package that provides interactive, real-time visualizations for [Mesa](https://mesa.readthedocs.io/latest/) agent-based models using the [Python Arcade Library](https://api.arcade.academy/en/stable/).  
-It enables fast, desktop-based GUIs with layered spatial plots, time-series charts, and live parameter controls.
+Mesarcade is a Python package that provides fast, interactive visualizations of Mesa agent-based models using Python Arcade.  
 
-⚠️ Mesa-arcade is under active development. APIs may change.
+
+⚠️ mesarcade is under active development. APIs may change.
 
 ## Components
 
-Mesa-arcade follows a compositional design: you define how agents are drawn (Artists), where they are drawn (SpacePlots), what is tracked over time (HistoryPlots), and how parameters can be changed (Controllers), all embedded in a Canvas.
+mesarcade follows a compositional design: you define how agents are drawn (Artists), where they are drawn (SpacePlots), what is tracked over time (HistoryPlots), and how parameters can be changed (Controllers), all embedded in a Canvas.
 
 ### Artists
 
@@ -103,7 +103,7 @@ canvas.show()
 
 ## Full example
 
-*More examples can be found in [`"/mesa-arcade/examples"`](https://github.com/mariuzka/mesa-arcade/tree/main/examples).*
+*More examples can be found in [`"/mesarcade/examples"`](https://github.com/mariuzka/mesarcade/tree/main/examples).*
 
 ```python
 import mesa_arcade as mesar

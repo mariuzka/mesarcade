@@ -1,4 +1,4 @@
-import mesa_arcade as mesar
+import mesarcade as mesar
 from mesa.examples.basic.schelling.model import Schelling
 
 # artists

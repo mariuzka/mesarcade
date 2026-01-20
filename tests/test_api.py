@@ -1,4 +1,4 @@
-import mesa_arcade as mesar
+import mesarcade as mesar
 from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
 
 def test_sugarscape():

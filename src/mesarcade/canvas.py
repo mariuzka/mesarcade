@@ -1,7 +1,7 @@
 import arcade
 import mesa
 
-from mesa_arcade.renderer import Renderer
+from mesarcade.renderer import Renderer
 
 
 class Canvas:
@@ -13,7 +13,7 @@ class Canvas:
         plots: list = [],
         controllers: list = [],
         window_width: int = 1200,
-        window_title: str = "Mesa-arcade",
+        window_title: str = "mesarcade",
         target_fps: int = 40,
         rendering_step: int = 1,
     ) -> None:
@@ -36,7 +36,7 @@ class Canvas:
                 Defaults to 1200.
             window_title (str, optional):
                 The title of the canvas.
-                Defaults to "Mesa-arcade".
+                Defaults to "mesarcade".
             target_fps (int, optional):
                 The number of frames per second (FPS) that the animations should show.
                 Defaults to 40.

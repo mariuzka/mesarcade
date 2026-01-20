@@ -1,7 +1,7 @@
 import arcade
 import arcade.gui
 
-from mesa_arcade.styles import create_button_style
+from mesarcade.styles import create_button_style
 
 
 class SmallButton(arcade.gui.UIFlatButton):

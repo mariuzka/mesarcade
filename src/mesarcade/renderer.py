@@ -3,8 +3,8 @@ import arcade.gui
 import arcade.gui.widgets.text
 import mesa
 
-from mesa_arcade.button import DefaultButtons
-from mesa_arcade.controller import NumController
+from mesarcade.button import DefaultButtons
+from mesarcade.controller import NumController
 
 
 class Renderer(arcade.View):
