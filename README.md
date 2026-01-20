@@ -5,11 +5,11 @@
 Mesarcade is a Python package that provides fast, interactive visualizations of Mesa agent-based models using Python Arcade.  
 
 
-⚠️ mesarcade is under active development. APIs may change.
+⚠️ Mesarcade is under active development. APIs may change.
 
 ## Components
 
-mesarcade follows a compositional design: you define how agents are drawn (Artists), where they are drawn (SpacePlots), what is tracked over time (HistoryPlots), and how parameters can be changed (Controllers), all embedded in a Canvas.
+Mesarcade follows a compositional design: you define how agents are drawn (Artists), where they are drawn (SpacePlots), what is tracked over time (HistoryPlots), and how parameters can be changed (Controllers), all embedded in a Canvas.
 
 ### Artists
 
