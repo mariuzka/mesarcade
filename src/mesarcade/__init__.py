@@ -1,8 +1,8 @@
 from .canvas import Canvas
 from .controller import NumController, CatController
-from .artist import CellAgentArtists, CellArtists, ContinuousSpaceAgentArtists
+from .artist import CellAgentArtists, CellArtists, ContinuousSpaceAgentArtists, NetworkCellArtists, NetworkCellAgentArtists
 from .history_plot import ModelHistoryPlot
-from .space_plot import GridSpacePlot, ContinuousSpacePlot
+from .space_plot import GridSpacePlot, ContinuousSpacePlot, NetworkPlot
 from .value_display import ValueDisplay
 
 __all__ = [
@@ -15,5 +15,8 @@ __all__ = [
     "NumController",
     "GridSpacePlot",
     "ContinuousSpacePlot",
-    "ValueDisplay"
+    "ValueDisplay",
+    "NetworkCellArtists",
+    "NetworkCellAgentArtists",
+    "NetworkPlot",
 ]

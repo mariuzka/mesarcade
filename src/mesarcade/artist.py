@@ -1,9 +1,12 @@
 import arcade
 import matplotlib
 import matplotlib.colors
+import networkx as nx
 import random
 
 from mesarcade.utils import parse_color
+
+
 
 
 class Artist:
@@ -132,8 +135,15 @@ class Artist:
                 radius=max(1, min(self.width, self.height) / 2),
                 color=arcade.color.BABY_BLUE,  # platzhalter
             )
-        else:
-            raise ValueError("`shape` must be on of: 'rect', 'circle'.")
+        elif self.shape == "line":
+            sprite = arcade.SpriteSequence()
+            
+            draw_line_strip(
+                self.scaled_data_dict[model_attr],
+                color=self.color_list[i],
+                line_width=2,
+            )
+       
 
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
@@ -341,3 +351,91 @@ class ContinuousSpaceAgentArtists(Artist):
 
     def scale_y(self, y):
         return y * self.figure.cell_height + self.figure.y
+
+
+class NetworkCellArtists(Artist):
+    def __init__(
+        self,
+        color: str | tuple | list | None = "black",
+        color_attribute: str | None = None,
+        color_map: str | None = "bwr",
+        color_vmin: float | None = None,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 2,
+        entity_selector=lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
+        node_size = 1,
+        node_gap = 10,
+        networkx_layout = nx.spring_layout
+    ):
+        super().__init__(
+            color=color,
+            color_attribute=color_attribute,
+            color_map=color_map,
+            color_vmin=color_vmin,
+            color_vmax=color_vmax,
+            shape=shape,
+            size=size,
+            entity_selector=entity_selector,
+            jitter=jitter,
+            dynamic_color=dynamic_color,
+            dynamic_position=dynamic_position,
+            dynamic_population=dynamic_population,
+        )
+        self.node_size = node_size
+        self.node_gap = node_gap
+        self.networkx_layout = networkx_layout
+
+    def _get_node_positions(self):
+        self.layout_positions = self.networkx_layout(self.model.grid.G)
+        
+        self.max_x_node_position = max([abs(self.layout_positions[i][0]) for i in self.layout_positions])
+        self.max_y_node_position = max([abs(self.layout_positions[i][1]) for i in self.layout_positions])
+        
+        for i, cell in enumerate(self.model.grid):
+            cell._MESARCADE_NETWORK_POSITION = self.layout_positions[i]
+            cell._MESARCADE_NETWORK_POSITION[0] /= self.max_x_node_position
+            cell._MESARCADE_NETWORK_POSITION[1] /= self.max_y_node_position
+
+    def get_population(self):
+        self._get_node_positions()
+        return self.model.grid
+
+    def get_xy_position(self, entity):
+        return entity._MESARCADE_NETWORK_POSITION
+
+    def scale_x(self, x):
+        return x * self.figure.width / 2.5 + self.figure.x + self.figure.width / 2
+
+    def scale_y(self, y):
+        return y * self.figure.height / 2.5 + self.figure.y + self.figure.height / 2
+    
+    def draw(self):
+        self.sprite_list.draw()
+
+        edges = self.model.grid.G.edges()
+
+        for u, v in edges:
+            node_u_pos = self.layout_positions[u]
+            node_v_pos = self.layout_positions[v]
+
+            node_u_pos = [self.scale_x(node_u_pos[0]), self.scale_y(node_u_pos[1])]
+            node_v_pos = [self.scale_x(node_v_pos[0]), self.scale_y(node_v_pos[1])]
+
+            arcade.draw_line_strip(
+                [node_u_pos, node_v_pos],
+                color=arcade.color.BLACK,
+                line_width=2,
+            )
+        
+class NetworkCellAgentArtists(NetworkCellArtists):
+    def get_xy_position(self, entity):
+        return entity.cell._MESARCADE_NETWORK_POSITION
+    
+    def get_population(self):
+        self._get_node_positions()
+        return self.model.agents
