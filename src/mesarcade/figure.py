@@ -21,10 +21,12 @@ class Figure:
         self.figure_type = figure_type
 
     def setup(self, x, y, width, height, renderer):
-        self.renderer = renderer
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
-
+        self.renderer = renderer
+        
         self.font_size = self.height * 0.03
 
         if self.figure_type == "network":
@@ -37,9 +39,6 @@ class Figure:
             self.cell_width = self.width / self.space_width
             self.cell_height = self.height / self.space_height
           
-        self.x = x
-        self.y = y
-
         self.shape_list = self.shape_list = arcade.shape_list.ShapeElementList()
         self.text_batch = Batch()
         self.text_list = []

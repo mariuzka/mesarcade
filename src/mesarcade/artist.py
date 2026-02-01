@@ -22,6 +22,7 @@ class Artist:
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: None,
     ):
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
@@ -35,6 +36,7 @@ class Artist:
         self.entity_selector = entity_selector
         self.jitter = jitter
         self.size = size
+        self.get_population = get_population
 
         self.assert_correct_color_input()
         if self.color_attribute is not None:
@@ -49,13 +51,12 @@ class Artist:
         self.figure = figure
         self.renderer = renderer
         self.model = self.renderer.model
-        self.population = self.get_population()
+        self.population = self.get_population(self.renderer.model)
+
+        self.setup2()
 
         self.set_size()
         self.setup_sprites()
-
-    def get_population(self):
-        pass
 
     def get_xy_position(self, entity):
         pass
@@ -64,6 +65,9 @@ class Artist:
         pass
 
     def scale_y(self, y):
+        pass
+
+    def setup2(self):
         pass
 
     def draw(self):
@@ -226,6 +230,7 @@ class CellAgentArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: model.agents
     ):
         super().__init__(
             color=color,
@@ -240,10 +245,8 @@ class CellAgentArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.agents
 
     def get_xy_position(self, entity):
         return entity.cell.coordinate
@@ -274,6 +277,7 @@ class CellArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = False,
         dynamic_population: bool = True,
+        get_population = lambda model: model.grid
     ):
         super().__init__(
             color=color,
@@ -288,10 +292,8 @@ class CellArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.grid
 
     def get_xy_position(self, entity):
         return entity.coordinate
@@ -322,6 +324,7 @@ class ContinuousSpaceAgentArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: model.agents,
     ):
         super().__init__(
             color=color,
@@ -336,10 +339,8 @@ class ContinuousSpaceAgentArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.agents
 
     def get_xy_position(self, entity):
         return entity.position
@@ -366,7 +367,8 @@ class NetworkCellArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout = nx.spring_layout
+        networkx_layout = nx.spring_layout,
+        get_population = lambda model: model.grid,
     ):
         super().__init__(
             color=color,
@@ -381,6 +383,7 @@ class NetworkCellArtists(Artist):
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
         self.networkx_layout = networkx_layout
 
@@ -403,9 +406,8 @@ class NetworkCellArtists(Artist):
             cell._MESARCADE_NETWORK_POSITION[0] /= self.max_x_node_position
             cell._MESARCADE_NETWORK_POSITION[1] /= self.max_y_node_position
 
-    def get_population(self):
+    def setup2(self):
         self._get_node_positions()
-        return self.model.grid
 
     def get_xy_position(self, entity):
         return entity._MESARCADE_NETWORK_POSITION
@@ -435,9 +437,39 @@ class NetworkCellArtists(Artist):
             )
         
 class NetworkCellAgentArtists(NetworkCellArtists):
+    def __init__(
+        self,
+        color: str | tuple | list | None = "black",
+        color_attribute: str | None = None,
+        color_map: str | None = "bwr",
+        color_vmin: float | None = None,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 2,
+        entity_selector=lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
+        networkx_layout = nx.spring_layout,
+        get_population = lambda model: model.agents,
+    ):
+        super().__init__(
+            color=color,
+            color_attribute=color_attribute,
+            color_map=color_map,
+            color_vmin=color_vmin,
+            color_vmax=color_vmax,
+            shape=shape,
+            size=size,
+            entity_selector=entity_selector,
+            jitter=jitter,
+            dynamic_color=dynamic_color,
+            dynamic_position=dynamic_position,
+            dynamic_population=dynamic_population,
+            get_population=get_population,
+        )
+        self.networkx_layout = networkx_layout
+    
     def get_xy_position(self, entity):
         return entity.cell._MESARCADE_NETWORK_POSITION
-    
-    def get_population(self):
-        self._get_node_positions()
-        return self.model.agents
