@@ -6,9 +6,6 @@ import random
 
 from mesarcade.utils import parse_color
 
-
-
-
 class Artist:
     def __init__(
         self,
@@ -409,10 +406,10 @@ class NetworkCellArtists(Artist):
         return entity._MESARCADE_NETWORK_POSITION
 
     def scale_x(self, x):
-        return x * self.figure.width / 2.5 + self.figure.x + self.figure.width / 2
+        return x * self.figure.width / 2.2 + self.figure.x + self.figure.width / 2
 
     def scale_y(self, y):
-        return y * self.figure.height / 2.5 + self.figure.y + self.figure.height / 2
+        return y * self.figure.height / 2.2 + self.figure.y + self.figure.height / 2
     
     def draw(self):
         self.sprite_list.draw()

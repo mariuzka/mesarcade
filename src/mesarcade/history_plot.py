@@ -248,4 +248,4 @@ class ModelHistoryPlot(Figure):
             labels=labels,
             legend=legend,
         )
-        super().__init__(components=[plot], title=title, space_attr_name=None)
+        super().__init__(components=[plot], title=title, get_space=None)

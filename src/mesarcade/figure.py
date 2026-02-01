@@ -7,7 +7,7 @@ from mesarcade.utils import parse_color
 class Figure:
     def __init__(
         self, 
-        space_attr_name: str,
+        get_space,
         components=[],
         background_color = "whitesmoke", 
         title: str | None = None,
@@ -17,7 +17,7 @@ class Figure:
         self.components = components
         self.background_color = parse_color(background_color)
         self.title = title
-        self.space_attr_name = space_attr_name
+        self.get_space = get_space
         self.figure_type = figure_type
 
     def setup(self, x, y, width, height, renderer):
@@ -25,24 +25,19 @@ class Figure:
         self.width = width
         self.height = height
 
-        print(self.width)
-        print(self.height)
-
         self.font_size = self.height * 0.04
 
         if self.figure_type == "network":
-            self.cell_width = 10
-            self.cell_height = 10
+            self.cell_width = 5
+            self.cell_height = 5
         
         elif self.figure_type in ["grid", "continuous"]:
-            space = getattr(self.renderer.model, self.space_attr_name)
+            space = self.get_space(self.renderer.model)
             self.space_width = space.width
             self.space_height = space.height
             self.cell_width = self.width / self.space_width
             self.cell_height = self.height / self.space_height
           
-
-
         self.x = x
         self.y = y
 
