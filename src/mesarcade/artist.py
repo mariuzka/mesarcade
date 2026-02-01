@@ -366,8 +366,6 @@ class NetworkCellArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        node_size = 1,
-        node_gap = 10,
         networkx_layout = nx.spring_layout
     ):
         super().__init__(
@@ -384,8 +382,6 @@ class NetworkCellArtists(Artist):
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
         )
-        self.node_size = node_size
-        self.node_gap = node_gap
         self.networkx_layout = networkx_layout
 
     def _get_node_positions(self):
@@ -394,13 +390,13 @@ class NetworkCellArtists(Artist):
         self.max_x_node_position = max([abs(self.layout_positions[i][0]) for i in self.layout_positions])
         self.max_y_node_position = max([abs(self.layout_positions[i][1]) for i in self.layout_positions])
         
-        size = max(
+        self.node_size = max(
             10 / math.log10(len(self.layout_positions)) * self.figure.width / 400, 
-            3,
+            1,
             )
 
-        self.figure.cell_width = size
-        self.figure.cell_height = size
+        self.figure.cell_width = self.node_size
+        self.figure.cell_height = self.node_size
         
         for i, cell in enumerate(self.model.grid):
             cell._MESARCADE_NETWORK_POSITION = self.layout_positions[i]
@@ -435,7 +431,7 @@ class NetworkCellArtists(Artist):
             arcade.draw_line_strip(
                 [node_u_pos, node_v_pos],
                 color=arcade.color.BLACK,
-                line_width=2,
+                line_width=max(1, self.node_size / 5),
             )
         
 class NetworkCellAgentArtists(NetworkCellArtists):

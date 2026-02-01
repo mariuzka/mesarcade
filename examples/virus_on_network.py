@@ -24,7 +24,10 @@ num_nodes = mesar.NumController(
 # gui window
 canvas = mesar.Canvas(
     model_class=VirusOnNetwork,
-    plots=[space_plot, sir_plot],
+    plots=[
+        space_plot, 
+        sir_plot,
+        ],
     controllers=[num_nodes]
 )
 
