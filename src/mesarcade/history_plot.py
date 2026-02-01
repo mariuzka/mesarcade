@@ -239,7 +239,7 @@ class _ModelHistoryPlot:
 
 
 class ModelHistoryPlot(Figure):
-    def __init__(self, model_attributes, labels=[], legend=True, title=None):
+    def __init__(self, model_attributes, labels=None, legend=True, title=None):
         if not isinstance(model_attributes, (list, tuple)):
             model_attributes = [model_attributes]
 
