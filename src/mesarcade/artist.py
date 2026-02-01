@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.colors
 import networkx as nx
 import random
+import math
 
 from mesarcade.utils import parse_color
 
@@ -392,6 +393,14 @@ class NetworkCellArtists(Artist):
         
         self.max_x_node_position = max([abs(self.layout_positions[i][0]) for i in self.layout_positions])
         self.max_y_node_position = max([abs(self.layout_positions[i][1]) for i in self.layout_positions])
+        
+        size = max(
+            10 / math.log10(len(self.layout_positions)) * self.figure.width / 400, 
+            3,
+            )
+
+        self.figure.cell_width = size
+        self.figure.cell_height = size
         
         for i, cell in enumerate(self.model.grid):
             cell._MESARCADE_NETWORK_POSITION = self.layout_positions[i]

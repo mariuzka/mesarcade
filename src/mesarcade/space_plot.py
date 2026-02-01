@@ -22,7 +22,13 @@ class GridSpacePlot(Figure):
 
 
 class ContinuousSpacePlot(Figure):
-    def __init__(self, artists=[], background_color="white", title=None, get_space=lambda model: model.space,):
+    def __init__(
+        self, 
+        artists=[], 
+        background_color="white", 
+        title=None, 
+        get_space=lambda model: model.space,
+        ):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 

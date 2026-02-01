@@ -25,11 +25,10 @@ class Figure:
         self.width = width
         self.height = height
 
-        self.font_size = self.height * 0.04
+        self.font_size = self.height * 0.03
 
         if self.figure_type == "network":
-            self.cell_width = 5
-            self.cell_height = 5
+            pass
         
         elif self.figure_type in ["grid", "continuous"]:
             space = self.get_space(self.renderer.model)
