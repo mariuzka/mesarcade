@@ -17,6 +17,7 @@ class Canvas:
         window_title: str = "mesarcade",
         target_fps: int = 40,
         rendering_step: int = 1,
+        _visible: bool = True,
     ) -> None:
         """ "
         Creates a new canvas instance.
@@ -47,7 +48,8 @@ class Canvas:
         """
         window_height = int(window_width * 0.6)
 
-        arcade.enable_timings()
+        if not arcade.timings_enabled():
+            arcade.enable_timings()
 
         # the arcade window object
         self.window = arcade.Window(
@@ -56,6 +58,7 @@ class Canvas:
             title=window_title,
             resizable=False,
             antialiasing=False,
+            visible=_visible,
         )
 
         # the arcade view object
@@ -70,11 +73,7 @@ class Canvas:
             rendering_step=rendering_step,
         )
 
-    def show(self) -> None:
-        """Renders the canvas."""
-
-        arcade.set_background_color(arcade.color.BLACK)
-
+    def _setup(self):
         # setup the renderer
         self.renderer.setup()
 
@@ -83,6 +82,13 @@ class Canvas:
 
         # initialize arcade window
         self.window.show_view(new_view=self.renderer)
+
+
+    def show(self) -> None:
+        """Renders the canvas."""
+        
+        # setup everything
+        self._setup()
 
         # show the window & run the simulation
         arcade.run()
