@@ -13,7 +13,7 @@ def test_sugarscape():
         color_vmax=5,
         jitter=True,
         size=0.3,
-        entity_selector=lambda cell: cell.sugar > 0,
+        filter_entities=lambda cell: cell.sugar > 0,
         )
     spice = mesar.CellArtists(
         color_attribute="spice",
@@ -22,7 +22,7 @@ def test_sugarscape():
         color_vmax=5,
         jitter=True,
         size=0.3,
-        entity_selector=lambda cell: cell.spice > 0,
+        filter_entities=lambda cell: cell.spice > 0,
         )
 
     # space plot

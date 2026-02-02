@@ -6,29 +6,39 @@ from mesarcade.utils import parse_color
 
 class Figure:
     def __init__(
-        self, space_attr_name: str, components=[], background_color="whitesmoke", title=None
+        self, 
+        get_space,
+        components=[],
+        background_color = "whitesmoke", 
+        title: str | None = None,
+        figure_type: str | None = None,
+        
     ):
         self.components = components
         self.background_color = parse_color(background_color)
         self.title = title
-        self.space_attr_name = space_attr_name
+        self.get_space = get_space
+        self.figure_type = figure_type
 
     def setup(self, x, y, width, height, renderer):
-        self.renderer = renderer
-        self.width = width
-        self.height = height
-
-        self.font_size = self.height * 0.04
-
-        if self.space_attr_name is not None:
-            self.space_width = getattr(self.renderer.model, self.space_attr_name).width
-            self.space_height = getattr(self.renderer.model, self.space_attr_name).height
-            self.cell_width = self.width / self.space_width
-            self.cell_height = self.height / self.space_height
-
         self.x = x
         self.y = y
+        self.width = width
+        self.height = height
+        self.renderer = renderer
+        
+        self.font_size = self.height * 0.03
 
+        if self.figure_type == "network":
+            pass
+        
+        elif self.figure_type in ["grid", "continuous"]:
+            space = self.get_space(self.renderer.model)
+            self.space_width = space.width
+            self.space_height = space.height
+            self.cell_width = self.width / self.space_width
+            self.cell_height = self.height / self.space_height
+          
         self.shape_list = self.shape_list = arcade.shape_list.ShapeElementList()
         self.text_batch = Batch()
         self.text_list = []

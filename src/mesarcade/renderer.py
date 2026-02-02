@@ -146,7 +146,11 @@ class Renderer(arcade.View):
                 fig_4_x = self.window_width / 2 + fig_width / 4 + self.atomic_height
                 fig_4_y = self.window_height / 2 - fig_width - self.atomic_height
                 fig_4.setup(
-                    x=fig_4_x, y=fig_4_y, width=fig_width, height=fig_height, renderer=self
+                    x=fig_4_x, 
+                    y=fig_4_y, 
+                    width=fig_width, 
+                    height=fig_height, 
+                    renderer=self,
                 )
 
     def set_target_objects_of_controllers(self):

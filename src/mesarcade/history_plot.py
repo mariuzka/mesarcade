@@ -2,6 +2,8 @@ import arcade
 import numpy as np
 from mesarcade.figure import Figure
 
+from mesarcade.utils import parse_color
+
 
 def rescale(value, old_min, old_max, new_min, new_max):
     old_range = old_max - old_min
@@ -36,7 +38,9 @@ class _ModelHistoryPlot:
         self, 
         model_attributes: str, 
         labels: list[str] | None = None, 
-        step: int = 10, 
+        colors: list[str] | None = None,
+        rendering_step: int = 5,
+        title = None,
         legend: bool = True,
     ):
         if len(model_attributes) > 6:
@@ -45,19 +49,28 @@ class _ModelHistoryPlot:
         if labels is not None:
             if len(model_attributes) != len(labels):
                 raise ValueError("The arguments model_attributes and labels must have the same length.")
+        
+        if colors is not None:
+            if len(model_attributes) != len(colors):
+                raise ValueError("The arguments model_attributes and colors must have the same length.")
 
         self.model_attrs = model_attributes
         self.labels = labels
-        self.step = step
+        self.rendering_step = rendering_step
         self.legend = legend
+        self.title = title
 
-        self.color_list = [
-            arcade.color.NAVY_BLUE,
-            arcade.color.ORANGE,
-            arcade.color.GREEN,
-            arcade.color.RED,
-            arcade.color.PINK,
-            arcade.color.PURPLE,
+        
+        if colors is not None:
+            self.colors = [parse_color(color) for color in colors]
+        else:
+            self.colors = [
+                arcade.color.NAVY_BLUE,
+                arcade.color.ORANGE,
+                arcade.color.GREEN,
+                arcade.color.RED,
+                arcade.color.PINK,
+                arcade.color.PURPLE,
             ]
 
     def setup(self, figure, renderer):
@@ -157,7 +170,7 @@ class _ModelHistoryPlot:
                 center_y=label_y + self.font_size / 3,
                 width=self.font_size,
                 height=self.font_size,
-                color=self.color_list[i],
+                color=self.colors[i],
             )
             self.figure.shape_list.append(color_dot)
 
@@ -166,7 +179,7 @@ class _ModelHistoryPlot:
         tick = self.renderer.tick
 
         # check if it is time to update
-        if tick % self.step == 0 or tick <= 1:
+        if tick % self.rendering_step == 0 or tick <= 1:
             
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
@@ -233,19 +246,30 @@ class _ModelHistoryPlot:
         for i, model_attr in enumerate(self.model_attrs):
             arcade.draw_line_strip(
                 self.scaled_data_dict[model_attr],
-                color=self.color_list[i],
+                color=self.colors[i],
                 line_width=2,
             )
 
 
 class ModelHistoryPlot(Figure):
-    def __init__(self, model_attributes, labels=[], legend=True, title=None):
+    def __init__(
+        self, 
+        model_attributes, 
+        labels=None, 
+        colors=None, 
+        legend=True, 
+        title=None,
+        rendering_step=3,
+        ):
         if not isinstance(model_attributes, (list, tuple)):
             model_attributes = [model_attributes]
 
         plot = _ModelHistoryPlot(
             model_attributes=model_attributes,
             labels=labels,
+            colors=colors,
             legend=legend,
+            title=title,
+            rendering_step=rendering_step,
         )
-        super().__init__(components=[plot], title=title, space_attr_name=None)
+        super().__init__(components=[plot], title=title, get_space=None)

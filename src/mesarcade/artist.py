@@ -1,29 +1,33 @@
 import arcade
 import matplotlib
 import matplotlib.colors
+import networkx as nx
 import random
+import math
 
 from mesarcade.utils import parse_color
-
 
 class Artist:
     def __init__(
         self,
+        get_xy_position,
         color: str | tuple | list | None = "black",
-        color_attribute: str | None = None,
-        color_map: str | None = "bwr",
+        get_color_attr = None,
+        color_map: str | dict | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
         shape: str = "rect",
         size: float = 1,
-        entity_selector=lambda entity: True,
+        filter_entities=lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: None,
+        
     ):
         self.color = parse_color(color=color)
-        self.color_attribute = color_attribute
+        self.get_color_attr = get_color_attr
         self.color_map: str | dict | None = color_map
         self.color_vmin = color_vmin
         self.color_vmax = color_vmax
@@ -31,12 +35,14 @@ class Artist:
         self.dynamic_color = dynamic_color
         self.dynamic_position = dynamic_position
         self.dynamic_population = dynamic_population
-        self.entity_selector = entity_selector
+        self.filter_entities = filter_entities
         self.jitter = jitter
         self.size = size
+        self.get_population = get_population
+        self.get_xy_position = get_xy_position
 
         self.assert_correct_color_input()
-        if self.color_attribute is not None:
+        if self.get_color_attr is not None:
             self.color_dict = {}
             self.fill_color_dict()
 
@@ -48,21 +54,20 @@ class Artist:
         self.figure = figure
         self.renderer = renderer
         self.model = self.renderer.model
-        self.population = self.get_population()
+        self.population = self.get_population(self.renderer.model)
+
+        self.setup2()
 
         self.set_size()
         self.setup_sprites()
-
-    def get_population(self):
-        pass
-
-    def get_xy_position(self, entity):
-        pass
 
     def scale_x(self, x):
         pass
 
     def scale_y(self, y):
+        pass
+
+    def setup2(self):
         pass
 
     def draw(self):
@@ -84,10 +89,10 @@ class Artist:
             raise ValueError("`color_map` must be a str or a dict.")
 
     def assert_correct_color_input(self):
-        if self.color_attribute is None:
+        if self.get_color_attr is None:
             assert self.color is not None
 
-        elif self.color_attribute is not None:
+        elif self.get_color_attr is not None:
             assert self.color_map is not None
             if isinstance(self.color_map, str):
                 assert self.color_vmin is not None and self.color_vmax is not None
@@ -104,10 +109,11 @@ class Artist:
         sprite.center_y = y
 
     def set_sprite_color(self, entity, sprite):
-        if self.color_attribute is None:
+        if self.get_color_attr is None:
             sprite.color = self.color
         else:
-            sprite.color = self.color_dict[int(getattr(entity, self.color_attribute))]
+            color_attribute_value = self.get_color_attr(entity)
+            sprite.color = self.color_dict[color_attribute_value]
 
     def add_sprite(self, entity):
         sprite = self.create_sprite(entity=entity)
@@ -132,22 +138,29 @@ class Artist:
                 radius=max(1, min(self.width, self.height) / 2),
                 color=arcade.color.BABY_BLUE,  # platzhalter
             )
-        else:
-            raise ValueError("`shape` must be on of: 'rect', 'circle'.")
+        elif self.shape == "line":
+            sprite = arcade.SpriteSequence()
+            
+            draw_line_strip(
+                self.scaled_data_dict[model_attr],
+                color=self.color_list[i],
+                line_width=2,
+            )
+       
 
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
             sprite.mesar_y_jitter = (self.model.random.random() - 0.5) * self.figure.cell_height
 
         self.set_sprite_position(
-            xy_position=self.get_xy_position(entity=entity),
+            xy_position=self.get_xy_position(entity),
             sprite=sprite,
         )
         self.set_sprite_color(entity=entity, sprite=sprite)
         return sprite
 
     def select_entities(self) -> list:
-        return [entity for entity in self.population if self.entity_selector(entity)]
+        return [entity for entity in self.population if self.filter_entities(entity)]
 
     def update(self):
         # TODO: use dirty_color and dirty_position to update only specific entity sprites
@@ -207,38 +220,36 @@ class CellAgentArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        color_attribute: str | None = None,
+        get_color_attr: str | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
         shape: str = "circle",
         size: float = 1,
-        entity_selector=lambda entity: True,
+        filter_entities=lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: model.agents,
+        get_xy_position = lambda agent: agent.cell.coordinate,
     ):
         super().__init__(
+            get_xy_position=get_xy_position,
             color=color,
-            color_attribute=color_attribute,
+            get_color_attr=get_color_attr,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
             shape=shape,
             size=size,
-            entity_selector=entity_selector,
+            filter_entities=filter_entities,
             jitter=jitter,
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.agents
-
-    def get_xy_position(self, entity):
-        return entity.cell.coordinate
 
     def scale_x(self, x):
         return x * self.figure.cell_width + self.figure.x + self.figure.cell_width / 2
@@ -255,38 +266,36 @@ class CellArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "grey",
-        color_attribute: str | None = None,
+        get_color_attr: str | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
         shape: str = "rect",
         size: float = 1,
-        entity_selector=lambda entity: True,
+        filter_entities=lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = False,
         dynamic_population: bool = True,
+        get_population = lambda model: model.grid,
+        get_xy_position = lambda cell: cell.coordinate,
     ):
         super().__init__(
+            get_xy_position=get_xy_position,
             color=color,
-            color_attribute=color_attribute,
+            get_color_attr=get_color_attr,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
             shape=shape,
             size=size,
-            entity_selector=entity_selector,
+            filter_entities=filter_entities,
             jitter=jitter,
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.grid
-
-    def get_xy_position(self, entity):
-        return entity.coordinate
 
     def scale_x(self, x):
         return x * self.figure.cell_width + self.figure.x + self.figure.cell_width / 2
@@ -303,41 +312,160 @@ class ContinuousSpaceAgentArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        color_attribute: str | None = None,
+        get_color_attr: str | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
         shape: str = "circle",
         size: float = 2,
-        entity_selector=lambda entity: True,
+        filter_entities=lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
+        get_population = lambda model: model.agents,
+        get_xy_position = lambda agent: agent.position,
     ):
         super().__init__(
+            get_xy_position=get_xy_position,
             color=color,
-            color_attribute=color_attribute,
+            get_color_attr=get_color_attr,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
             shape=shape,
             size=size,
-            entity_selector=entity_selector,
+            filter_entities=filter_entities,
             jitter=jitter,
             dynamic_color=dynamic_color,
             dynamic_position=dynamic_position,
             dynamic_population=dynamic_population,
+            get_population=get_population,
         )
-
-    def get_population(self):
-        return self.model.agents
-
-    def get_xy_position(self, entity):
-        return entity.position
 
     def scale_x(self, x):
         return x * self.figure.cell_width + self.figure.x
 
     def scale_y(self, y):
         return y * self.figure.cell_height + self.figure.y
+
+
+class NetworkCellArtists(Artist):
+    def __init__(
+        self,
+        color: str | tuple | list | None = "black",
+        get_color_attr: str | None = None,
+        color_map: str | None = "bwr",
+        color_vmin: float | None = None,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 2,
+        filter_entities=lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
+        networkx_layout = nx.spring_layout,
+        get_population = lambda model: model.grid,
+        get_xy_position = lambda cell: cell._MESARCADE_NETWORK_POSITION,
+    ):
+        super().__init__(
+            get_xy_position=get_xy_position,
+            color=color,
+            get_color_attr=get_color_attr,
+            color_map=color_map,
+            color_vmin=color_vmin,
+            color_vmax=color_vmax,
+            shape=shape,
+            size=size,
+            filter_entities=filter_entities,
+            jitter=jitter,
+            dynamic_color=dynamic_color,
+            dynamic_position=dynamic_position,
+            dynamic_population=dynamic_population,
+            get_population=get_population,
+        )
+        self.networkx_layout = networkx_layout
+
+    def _get_node_positions(self):
+        self.layout_positions = self.networkx_layout(self.model.grid.G)
+        
+        self.max_x_node_position = max([abs(self.layout_positions[i][0]) for i in self.layout_positions])
+        self.max_y_node_position = max([abs(self.layout_positions[i][1]) for i in self.layout_positions])
+        
+        self.node_size = max(
+            10 / math.log10(len(self.layout_positions)) * self.figure.width / 400, 
+            1,
+            )
+
+        self.figure.cell_width = self.node_size
+        self.figure.cell_height = self.node_size
+        
+        for i, cell in enumerate(self.model.grid):
+            cell._MESARCADE_NETWORK_POSITION = self.layout_positions[i]
+            cell._MESARCADE_NETWORK_POSITION[0] /= self.max_x_node_position
+            cell._MESARCADE_NETWORK_POSITION[1] /= self.max_y_node_position
+
+    def setup2(self):
+        self._get_node_positions()
+
+    def scale_x(self, x):
+        return x * self.figure.width / 2.15 + self.figure.x + self.figure.width / 2
+
+    def scale_y(self, y):
+        return y * self.figure.height / 2.15 + self.figure.y + self.figure.height / 2
+    
+    def draw(self):
+        edges = self.model.grid.G.edges()
+        for u, v in edges:
+            node_u_pos = self.layout_positions[u]
+            node_v_pos = self.layout_positions[v]
+
+            node_u_pos = [self.scale_x(node_u_pos[0]), self.scale_y(node_u_pos[1])]
+            node_v_pos = [self.scale_x(node_v_pos[0]), self.scale_y(node_v_pos[1])]
+
+            arcade.draw_line_strip(
+                [node_u_pos, node_v_pos],
+                color=arcade.color.BLACK,
+                line_width=max(1, self.node_size / 5),
+            )
+            
+        self.sprite_list.draw()
+
+
+class NetworkAgentArtists(NetworkCellArtists):
+    def __init__(
+        self,
+        color: str | tuple | list | None = "black",
+        get_color_attr: str | None = None,
+        color_map: str | None = "bwr",
+        color_vmin: float | None = None,
+        color_vmax: float | None = None,
+        shape: str = "circle",
+        size: float = 2,
+        filter_entities=lambda entity: True,
+        jitter: bool = False,
+        dynamic_color: bool = True,
+        dynamic_position: bool = True,
+        dynamic_population: bool = True,
+        networkx_layout = nx.spring_layout,
+        get_population = lambda model: model.agents,
+        get_xy_position = lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
+    ):
+        super().__init__(
+            get_xy_position=get_xy_position,
+            color=color,
+            get_color_attr=get_color_attr,
+            color_map=color_map,
+            color_vmin=color_vmin,
+            color_vmax=color_vmax,
+            shape=shape,
+            size=size,
+            filter_entities=filter_entities,
+            jitter=jitter,
+            dynamic_color=dynamic_color,
+            dynamic_position=dynamic_position,
+            dynamic_population=dynamic_population,
+            get_population=get_population,
+        )
+        self.networkx_layout = networkx_layout
