@@ -3,7 +3,7 @@ from mesa.examples.basic.schelling.model import Schelling
 
 # artists
 agents = mesar.CellAgentArtists(
-    color_attribute="type",
+    get_color_attr = lambda agent: agent.type,
     color_map={0: "blue", 1: "red"},
     shape="circle",
 )

@@ -18,6 +18,8 @@ Artists are the visual representations of the entities in a mesa model.
 - `CellArtists`: A visual representation for `mesa.Cell` and `mesa.Property_Layer`.
 - `CellAgentArtists`: A visual representation for a set of `mesa.CellAgent`s.
 - `ContinuousSpaceAgentArtists`: A visual representation for a set of `mesa.ContinuousSpaceAgent`s.
+- `NetworkCellArtists`: A visual representation for cells in a `mesa.Network`.
+- `NetworkAgentArtists`: A visual representation for agents on a `mesa.Network`.
 
 **Example:**
 
@@ -25,7 +27,7 @@ Let's create a visual representation for our CellAgents. We map the agent attrib
 
 ```python
 agents = mesar.CellAgentArtists(
-    color_attribute="type",
+    get_color_attr=lambda agent: agent.type,
     color_map={0: "blue", 1: "red"},
 )
 ```
@@ -37,6 +39,7 @@ You can add/layer as many artists as you want to.
 
 - `GridSpacePlot`: Visualizes a grid.
 - `ContinuousSpacePlot`: Visualizes a continuous space.
+- `NetworkPlot`: A space in which networks are visualized.
 
 **Example:**
 
@@ -80,7 +83,7 @@ happy_value = mesar.ValueDisplay(model_attribute="happy", label="Happy agents")
 Interactive controllers of model attributes and parameters.
 
 - `NumController`: A controller for numeric parameters.
-- `CatController`: A controller for categorical paremeters.
+- `CatController`: A controller for categorical parameters.
 
 **Example**
 
@@ -123,7 +126,7 @@ from mesa.examples.basic.schelling.model import Schelling
 
 # artists
 agents = mesar.CellAgentArtists(
-    color_attribute="type",
+    get_color_attr=lambda agent: agent.type,
     color_map={0: "blue", 1: "red"},
     shape="circle",
 )

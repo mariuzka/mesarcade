@@ -9,24 +9,24 @@ agents = mesar.CellAgentArtists(
 
 # sugar cells
 sugar = mesar.CellArtists(
-    color_attribute="sugar",
+    get_color_attr = lambda cell: cell.sugar,
     color_map="Greens",
     color_vmin=0,
     color_vmax=4,
     jitter=True,
     size=0.5,
-    entity_selector=lambda cell: cell.sugar > 0,
+    filter_entities=lambda cell: cell.sugar > 0,
 )
 
 # spice cells
 spice = mesar.CellArtists(
-    color_attribute="spice",
+    get_color_attr = lambda cell: cell.spice,
     color_map="Reds",
     color_vmin=0,
     color_vmax=4,
     jitter=True,
     size=0.5,
-    entity_selector=lambda cell: cell.spice > 0,
+    filter_entities=lambda cell: cell.spice > 0,
 )
 
 # space plot
