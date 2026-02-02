@@ -7,8 +7,11 @@ Mesarcade is a Python package that provides fast, interactive visualizations of 
 
 ⚠️ Mesarcade is under active development. APIs may change.
 
-
 ![](docs/img/screenshot_virus_on_network.png)
+
+<br>
+
+![](docs/img/screenshot_schelling.png)
 
 
 ## Components
