@@ -7,13 +7,26 @@ class ValueDisplay:
             model_attribute: str | None = None, 
             label: str | None = None, 
             update_step: int = 10,
+            from_datacollector = False,
+            get_model_attribute = None,
             ):
+        """Displays the value of a given model attribute.
+
+        Args:
+            model_attribute (str | None, optional): The model attribute. Defaults to None.
+            label (str | None, optional): An optional label for the model attribute. Defaults to None.
+            update_step (int, optional): The number of steps after which the displayed value gets updated. Defaults to 10.
+        """
         self.model_attribute = model_attribute
         self.label = label
         self.update_step = update_step
+        self.from_datacollector = from_datacollector
+        self.get_model_attribute = get_model_attribute
         
+
     def setup(self, i, renderer, initial_value = None):
         self.renderer = renderer
+        self.model = self.renderer.model
 
         self.text_batch = Batch()
         self.text_list = []
@@ -59,7 +72,17 @@ class ValueDisplay:
         self.text_list.append(self.value_element)
     
     def get_value_from_model(self):
-        return str(getattr(self.renderer.model, self.model_attribute))
+        # get the value from a model attribute
+        if not self.from_datacollector and self.get_model_attribute is None:
+            return str(getattr(self.model, self.model_attribute))
+        
+        # get the value from the datacollector
+        elif self.from_datacollector:
+            return str(self.model.datacollector.model_vars[self.model_attribute][-1])
+
+        # get the value by hand using the lambda function
+        else:
+            return str(self.get_model_attribute(self.model))
 
     def update(self, new_value = None, force_update = False):
         if self.renderer.tick % self.update_step == 0 or force_update:

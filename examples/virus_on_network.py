@@ -4,7 +4,7 @@ import networkx as nx
 
 # network artists (draws nodes and edges)
 network = mesar.NetworkAgentArtists(
-    networkx_layout=nx.spring_layout,
+    networkx_layout=nx.kamada_kawai_layout,
     get_color_attr = lambda node: node.state.value,
     color_map={
         0: "green",
@@ -20,7 +20,13 @@ network_plot = mesar.NetworkPlot(artists=[network])
 sir_plot = mesar.ModelHistoryPlot(
     model_attributes=["Susceptible", "Infected", "Resistant"],
     colors=["green", "red", "blue"],
+    rendering_step=1,
     )
+
+# display values
+n_susceptible = mesar.ValueDisplay("Susceptible", from_datacollector=True)
+n_infected = mesar.ValueDisplay("Infected", from_datacollector=True)
+n_resistant = mesar.ValueDisplay("Resistant", from_datacollector=True)
 
 # controllers
 num_nodes = mesar.NumController("num_nodes", 10, 10, 1000, 10)
@@ -46,7 +52,12 @@ canvas = mesar.Canvas(
         virus_check_frequency,
         recovery_chance,
         gain_resistance_chance,
-    ]
+    ],
+    value_displays=[
+        n_susceptible,
+        n_infected,
+        n_resistant,
+    ],
 )
 
 # show gui window

@@ -2,7 +2,12 @@ import mesarcade as mesar
 from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
 
 # agents
-agents = mesar.CellAgentArtists(
+agents_on_sugar = mesar.CellAgentArtists(
+    shape="circle",
+    color="black",
+)
+
+agents_on_spice = mesar.CellAgentArtists(
     shape="circle",
     color="black",
 )
@@ -13,9 +18,6 @@ sugar = mesar.CellArtists(
     color_map="Greens",
     color_vmin=0,
     color_vmax=4,
-    jitter=True,
-    size=0.5,
-    filter_entities=lambda cell: cell.sugar > 0,
 )
 
 # spice cells
@@ -24,13 +26,11 @@ spice = mesar.CellArtists(
     color_map="Reds",
     color_vmin=0,
     color_vmax=4,
-    jitter=True,
-    size=0.5,
-    filter_entities=lambda cell: cell.spice > 0,
 )
 
 # space plot
-space_plot = mesar.GridSpacePlot(artists=[sugar, spice, agents])
+spice_space = mesar.GridSpacePlot(artists=[spice, agents_on_spice], title="Sugar")
+sugar_space = mesar.GridSpacePlot(artists=[sugar, agents_on_sugar], title="Spice")
 
 # line plots
 price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"])
@@ -50,7 +50,8 @@ enable_trade = mesar.CatController("enable_trade", True, [True, False])
 canvas = mesar.Canvas(
     model_class=SugarscapeG1mt,
     plots=[
-        space_plot, 
+        spice_space,
+        sugar_space,
         price_plot, 
         traders_plot,
     ],
