@@ -14,7 +14,7 @@ agents_on_spice = mesar.CellAgentArtists(
 
 # sugar cells
 sugar = mesar.CellArtists(
-    get_color_attr=lambda cell: cell.sugar,
+    color_attribute="sugar",
     color_map="Greens",
     color_vmin=0,
     color_vmax=4,
@@ -22,7 +22,7 @@ sugar = mesar.CellArtists(
 
 # spice cells
 spice = mesar.CellArtists(
-    get_color_attr=lambda cell: cell.spice,
+    color_attribute="spice",
     color_map="Reds",
     color_vmin=0,
     color_vmax=4,
@@ -33,8 +33,10 @@ spice_space = mesar.GridSpacePlot(artists=[spice, agents_on_spice], title="Sugar
 sugar_space = mesar.GridSpacePlot(artists=[sugar, agents_on_sugar], title="Spice")
 
 # line plots
-price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"])
-traders_plot = mesar.ModelHistoryPlot(model_attributes=["#Traders", "Trade Volume"])
+price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"], from_datacollector=True)
+traders_plot = mesar.ModelHistoryPlot(
+    model_attributes=["#Traders", "Trade Volume"], from_datacollector=True
+)
 
 # controllers
 initial_population = mesar.NumController("initial_population", 200, 50, 500, 10)

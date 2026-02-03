@@ -1,3 +1,10 @@
+from importlib.metadata import version, PackageNotFoundError
+
+try:
+    __version__ = version("mesarcade")
+except PackageNotFoundError:
+    __version__ = "unknown"
+
 from .canvas import Canvas
 from .controller import NumController, CatController
 from .artist import (

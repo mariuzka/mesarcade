@@ -3,7 +3,7 @@ from mesa.examples.basic.schelling.model import Schelling
 
 # artists
 agents = mesar.CellAgentArtists(
-    get_color_attr=lambda agent: agent.type,
+    color_attribute="type",
     color_map={0: "blue", 1: "red"},
     shape="circle",
 )
@@ -27,7 +27,7 @@ height = mesar.NumController("height", 100, 10, 200, 10)
 # gui window
 canvas = mesar.Canvas(
     model_class=Schelling,
-    plots=[space],
+    plots=[space, happy_plot],
     value_displays=[happy_value],
     controllers=[density, minority_pc, homophily, width, height],
 )

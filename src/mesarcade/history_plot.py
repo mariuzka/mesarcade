@@ -42,6 +42,7 @@ class _ModelHistoryPlot:
         rendering_step: int = 5,
         title=None,
         legend: bool = True,
+        from_datacollector: bool = False,
     ):
         if len(model_attributes) > 6:
             raise ValueError("Only 6 lines allowed!")
@@ -63,6 +64,7 @@ class _ModelHistoryPlot:
         self.rendering_step = rendering_step
         self.legend = legend
         self.title = title
+        self.from_datacollector = from_datacollector
 
         if colors is not None:
             self.colors = [parse_color(color) for color in colors]
@@ -185,14 +187,12 @@ class _ModelHistoryPlot:
         if tick % self.rendering_step == 0 or tick <= 1:
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                # check if the model has the attribute
-                # TODO: Improve this. Maybe ask whether to use the datacollector or not.
-                if hasattr(self.renderer.model, model_attr):
+                # get the value from a model attribute
+                if not self.from_datacollector:
                     y = getattr(self.renderer.model, model_attr)
 
-                # if not
+                # or get the value from the datacollector
                 else:
-                    # get the data from the datacollector
                     y_data = self.renderer.model.datacollector.model_vars[model_attr]
                     y = y_data[-1] if len(y_data) > 0 else None
 
@@ -260,6 +260,7 @@ class ModelHistoryPlot(Figure):
         colors=None,
         legend=True,
         title=None,
+        from_datacollector=False,
         rendering_step=3,
     ):
         if not isinstance(model_attributes, (list, tuple)):
@@ -272,5 +273,6 @@ class ModelHistoryPlot(Figure):
             legend=legend,
             title=title,
             rendering_step=rendering_step,
+            from_datacollector=from_datacollector,
         )
         super().__init__(components=[plot], title=title, get_space=None)

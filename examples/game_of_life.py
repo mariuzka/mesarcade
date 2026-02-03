@@ -3,7 +3,7 @@ from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
 
 # artists
 agents = mesar.CellAgentArtists(
-    get_color_attr=lambda agent: agent.state,
+    color_attribute="state",
     color_map={0: "white", 1: "black"},
     shape="rect",
     dynamic_position=False,
