@@ -20,7 +20,7 @@ def run_gui_test(canvas, n_steps=10):
 
 def test_schelling():
     agents = mesar.CellAgentArtists(
-        get_color_attr=lambda agent: agent.type,
+        color_attribute="type",
         color_map={0: "blue", 1: "red"},
         shape="circle",
     )
@@ -44,7 +44,7 @@ def test_schelling():
 def test_sugarscape():
     agents = mesar.CellAgentArtists(shape="circle")
     sugar = mesar.CellArtists(
-        get_color_attr=lambda cell: cell.sugar,
+        color_attribute="sugar",
         color_map="Greens",
         color_vmin=0,
         color_vmax=5,
@@ -53,7 +53,7 @@ def test_sugarscape():
         filter_entities=lambda cell: cell.sugar > 0,
     )
     spice = mesar.CellArtists(
-        get_color_attr=lambda cell: cell.spice,
+        color_attribute="spice",
         color_map="Reds",
         color_vmin=0,
         color_vmax=5,
@@ -63,8 +63,8 @@ def test_sugarscape():
     )
 
     space_plot = mesar.GridSpacePlot(artists=[sugar, spice, agents])
-    price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"])
-    traders_plot = mesar.ModelHistoryPlot(model_attributes=["#Traders"])
+    price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"], from_datacollector=True)
+    traders_plot = mesar.ModelHistoryPlot(model_attributes=["#Traders"], from_datacollector=True)
 
     canvas = mesar.Canvas(
         model_class=SugarscapeG1mt,
@@ -78,7 +78,7 @@ def test_virus_on_network():
     # network artists (draws nodes and edges)
     network = mesar.NetworkAgentArtists(
         networkx_layout=nx.spring_layout,
-        get_color_attr=lambda node: node.state.value,
+        color_attribute=lambda node: node.state.value,
         color_map={
             0: "green",
             1: "red",
@@ -93,6 +93,7 @@ def test_virus_on_network():
     sir_plot = mesar.ModelHistoryPlot(
         model_attributes=["Susceptible", "Infected", "Resistant"],
         colors=["green", "red", "blue"],
+        from_datacollector=True,
     )
 
     # controllers

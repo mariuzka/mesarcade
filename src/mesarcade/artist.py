@@ -4,16 +4,17 @@ import matplotlib.colors
 import networkx as nx
 import math
 
+from typing import Callable
+
 from mesarcade.utils import parse_color
 
 
 class Artist:
     def __init__(
         self,
-        get_xy_position,
+        get_xy_position: Callable,
         color: str | tuple | list | None = "black",
-        color_attribute: str | None = None,
-        get_color_attr=None,
+        color_attribute: str | Callable | None = None,
         color_map: str | dict | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -27,7 +28,7 @@ class Artist:
         get_population=lambda model: None,
     ):
         self.color = parse_color(color=color)
-        self.get_color_attr = get_color_attr
+        self.color_attribute = color_attribute
         self.color_map: str | dict | None = color_map
         self.color_vmin = color_vmin
         self.color_vmax = color_vmax
@@ -42,7 +43,7 @@ class Artist:
         self.get_xy_position = get_xy_position
 
         self.assert_correct_color_input()
-        if self.get_color_attr is not None:
+        if self.color_attribute is not None:
             self.color_dict = {}
             self.fill_color_dict()
 
@@ -89,10 +90,10 @@ class Artist:
             raise ValueError("`color_map` must be a str or a dict.")
 
     def assert_correct_color_input(self):
-        if self.get_color_attr is None:
+        if self.color_attribute is None:
             assert self.color is not None
 
-        elif self.get_color_attr is not None:
+        elif self.color_attribute is not None:
             assert self.color_map is not None
             if isinstance(self.color_map, str):
                 assert self.color_vmin is not None and self.color_vmax is not None
@@ -109,10 +110,15 @@ class Artist:
         sprite.center_y = y
 
     def set_sprite_color(self, entity, sprite):
-        if self.get_color_attr is None:
+        if self.color_attribute is None:
             sprite.color = self.color
         else:
-            color_attribute_value = self.get_color_attr(entity)
+            # get color attribute value with getattr()
+            if isinstance(self.color_attribute, str):
+                color_attribute_value = getattr(entity, self.color_attribute)
+            # get it with a lambda
+            else:
+                color_attribute_value = self.color_attribute(entity)
             sprite.color = self.color_dict[color_attribute_value]
 
     def add_sprite(self, entity):
@@ -219,7 +225,7 @@ class CellAgentArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        get_color_attr: str | None = None,
+        color_attribute: str | Callable | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -236,7 +242,7 @@ class CellAgentArtists(Artist):
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
-            get_color_attr=get_color_attr,
+            color_attribute=color_attribute,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
@@ -265,7 +271,7 @@ class CellArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "grey",
-        get_color_attr: str | None = None,
+        color_attribute: str | Callable | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -282,7 +288,7 @@ class CellArtists(Artist):
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
-            get_color_attr=get_color_attr,
+            color_attribute=color_attribute,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
@@ -311,7 +317,7 @@ class ContinuousSpaceAgentArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        get_color_attr: str | None = None,
+        color_attribute: str | Callable | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -328,7 +334,7 @@ class ContinuousSpaceAgentArtists(Artist):
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
-            get_color_attr=get_color_attr,
+            color_attribute=color_attribute,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
@@ -353,7 +359,7 @@ class NetworkCellArtists(Artist):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        get_color_attr: str | None = None,
+        color_attribute: str | Callable | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -371,7 +377,7 @@ class NetworkCellArtists(Artist):
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
-            get_color_attr=get_color_attr,
+            color_attribute=color_attribute,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,
@@ -440,7 +446,7 @@ class NetworkAgentArtists(NetworkCellArtists):
     def __init__(
         self,
         color: str | tuple | list | None = "black",
-        get_color_attr: str | None = None,
+        color_attribute: str | Callable | None = None,
         color_map: str | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -458,7 +464,7 @@ class NetworkAgentArtists(NetworkCellArtists):
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
-            get_color_attr=get_color_attr,
+            color_attribute=color_attribute,
             color_map=color_map,
             color_vmin=color_vmin,
             color_vmax=color_vmax,

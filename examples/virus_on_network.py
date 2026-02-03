@@ -5,7 +5,7 @@ import networkx as nx
 # network artists (draws nodes and edges)
 network = mesar.NetworkAgentArtists(
     networkx_layout=nx.kamada_kawai_layout,
-    get_color_attr=lambda node: node.state.value,
+    color_attribute=lambda node: node.state.value,
     color_map={
         0: "green",
         1: "red",

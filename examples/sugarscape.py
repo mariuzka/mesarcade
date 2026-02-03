@@ -14,7 +14,7 @@ agents_on_spice = mesar.CellAgentArtists(
 
 # sugar cells
 sugar = mesar.CellArtists(
-    get_color_attr=lambda cell: cell.sugar,
+    color_attribute="sugar",
     color_map="Greens",
     color_vmin=0,
     color_vmax=4,
@@ -22,7 +22,7 @@ sugar = mesar.CellArtists(
 
 # spice cells
 spice = mesar.CellArtists(
-    get_color_attr=lambda cell: cell.spice,
+    color_attribute="spice",
     color_map="Reds",
     color_vmin=0,
     color_vmax=4,

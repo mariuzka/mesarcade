@@ -43,7 +43,7 @@ Let's create a visual representation for our CellAgents. We map the agent attrib
 
 ```python
 agents = mesar.CellAgentArtists(
-    get_color_attr=lambda agent: agent.type,
+    gcolor_attribute="type",
     color_map={0: "blue", 1: "red"},
 )
 ```
@@ -142,7 +142,7 @@ from mesa.examples.basic.schelling.model import Schelling
 
 # artists
 agents = mesar.CellAgentArtists(
-    get_color_attr=lambda agent: agent.type,
+    color_attribute="type",
     color_map={0: "blue", 1: "red"},
     shape="circle",
 )
