@@ -12,6 +12,7 @@ class Artist:
         self,
         get_xy_position,
         color: str | tuple | list | None = "black",
+        color_attribute: str | None = None,
         get_color_attr=None,
         color_map: str | dict | None = "bwr",
         color_vmin: float | None = None,
