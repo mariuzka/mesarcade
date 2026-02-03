@@ -33,8 +33,8 @@ spice_space = mesar.GridSpacePlot(artists=[spice, agents_on_spice], title="Sugar
 sugar_space = mesar.GridSpacePlot(artists=[sugar, agents_on_sugar], title="Spice")
 
 # line plots
-price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"])
-traders_plot = mesar.ModelHistoryPlot(model_attributes=["#Traders", "Trade Volume"])
+price_plot = mesar.ModelHistoryPlot(model_attributes=["Price"], from_datacollector=True)
+traders_plot = mesar.ModelHistoryPlot(model_attributes=["#Traders", "Trade Volume"], from_datacollector=True)
 
 # controllers
 initial_population = mesar.NumController("initial_population", 200, 50, 500, 10)

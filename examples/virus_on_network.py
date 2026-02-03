@@ -21,6 +21,7 @@ sir_plot = mesar.ModelHistoryPlot(
     model_attributes=["Susceptible", "Infected", "Resistant"],
     colors=["green", "red", "blue"],
     rendering_step=1,
+    from_datacollector=True,
 )
 
 # display values
