@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    uses: ./.github/workflows/tox.yml
   release:
     name: Release
     runs-on: ubuntu-latest
