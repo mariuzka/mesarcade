@@ -187,7 +187,6 @@ class _ModelHistoryPlot:
         if tick % self.rendering_step == 0 or tick <= 1:
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                
                 # get the value from a model attribute
                 if not self.from_datacollector:
                     y = getattr(self.renderer.model, model_attr)
