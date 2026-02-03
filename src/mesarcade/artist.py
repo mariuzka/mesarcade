@@ -2,17 +2,17 @@ import arcade
 import matplotlib
 import matplotlib.colors
 import networkx as nx
-import random
 import math
 
 from mesarcade.utils import parse_color
+
 
 class Artist:
     def __init__(
         self,
         get_xy_position,
         color: str | tuple | list | None = "black",
-        get_color_attr = None,
+        get_color_attr=None,
         color_map: str | dict | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
@@ -23,8 +23,7 @@ class Artist:
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population = lambda model: None,
-        
+        get_population=lambda model: None,
     ):
         self.color = parse_color(color=color)
         self.get_color_attr = get_color_attr
@@ -140,13 +139,12 @@ class Artist:
             )
         elif self.shape == "line":
             sprite = arcade.SpriteSequence()
-            
+
             draw_line_strip(
                 self.scaled_data_dict[model_attr],
                 color=self.color_list[i],
                 line_width=2,
             )
-       
 
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
@@ -231,8 +229,8 @@ class CellAgentArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population = lambda model: model.agents,
-        get_xy_position = lambda agent: agent.cell.coordinate,
+        get_population=lambda model: model.agents,
+        get_xy_position=lambda agent: agent.cell.coordinate,
     ):
         super().__init__(
             get_xy_position=get_xy_position,
@@ -277,8 +275,8 @@ class CellArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = False,
         dynamic_population: bool = True,
-        get_population = lambda model: model.grid,
-        get_xy_position = lambda cell: cell.coordinate,
+        get_population=lambda model: model.grid,
+        get_xy_position=lambda cell: cell.coordinate,
     ):
         super().__init__(
             get_xy_position=get_xy_position,
@@ -323,8 +321,8 @@ class ContinuousSpaceAgentArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population = lambda model: model.agents,
-        get_xy_position = lambda agent: agent.position,
+        get_population=lambda model: model.agents,
+        get_xy_position=lambda agent: agent.position,
     ):
         super().__init__(
             get_xy_position=get_xy_position,
@@ -365,9 +363,9 @@ class NetworkCellArtists(Artist):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout = nx.spring_layout,
-        get_population = lambda model: model.grid,
-        get_xy_position = lambda cell: cell._MESARCADE_NETWORK_POSITION,
+        networkx_layout=nx.spring_layout,
+        get_population=lambda model: model.grid,
+        get_xy_position=lambda cell: cell._MESARCADE_NETWORK_POSITION,
     ):
         super().__init__(
             get_xy_position=get_xy_position,
@@ -389,18 +387,22 @@ class NetworkCellArtists(Artist):
 
     def _get_node_positions(self):
         self.layout_positions = self.networkx_layout(self.model.grid.G)
-        
-        self.max_x_node_position = max([abs(self.layout_positions[i][0]) for i in self.layout_positions])
-        self.max_y_node_position = max([abs(self.layout_positions[i][1]) for i in self.layout_positions])
-        
+
+        self.max_x_node_position = max(
+            [abs(self.layout_positions[i][0]) for i in self.layout_positions]
+        )
+        self.max_y_node_position = max(
+            [abs(self.layout_positions[i][1]) for i in self.layout_positions]
+        )
+
         self.node_size = max(
-            10 / math.log10(len(self.layout_positions)) * self.figure.width / 400, 
+            10 / math.log10(len(self.layout_positions)) * self.figure.width / 400,
             1,
-            )
+        )
 
         self.figure.cell_width = self.node_size
         self.figure.cell_height = self.node_size
-        
+
         for i, cell in enumerate(self.model.grid):
             cell._MESARCADE_NETWORK_POSITION = self.layout_positions[i]
             cell._MESARCADE_NETWORK_POSITION[0] /= self.max_x_node_position
@@ -414,7 +416,7 @@ class NetworkCellArtists(Artist):
 
     def scale_y(self, y):
         return y * self.figure.height / 2.15 + self.figure.y + self.figure.height / 2
-    
+
     def draw(self):
         edges = self.model.grid.G.edges()
         for u, v in edges:
@@ -429,7 +431,7 @@ class NetworkCellArtists(Artist):
                 color=arcade.color.BLACK,
                 line_width=max(1, self.node_size / 5),
             )
-            
+
         self.sprite_list.draw()
 
 
@@ -448,9 +450,9 @@ class NetworkAgentArtists(NetworkCellArtists):
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout = nx.spring_layout,
-        get_population = lambda model: model.agents,
-        get_xy_position = lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
+        networkx_layout=nx.spring_layout,
+        get_population=lambda model: model.agents,
+        get_xy_position=lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
     ):
         super().__init__(
             get_xy_position=get_xy_position,

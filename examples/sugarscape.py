@@ -14,7 +14,7 @@ agents_on_spice = mesar.CellAgentArtists(
 
 # sugar cells
 sugar = mesar.CellArtists(
-    get_color_attr = lambda cell: cell.sugar,
+    get_color_attr=lambda cell: cell.sugar,
     color_map="Greens",
     color_vmin=0,
     color_vmax=4,
@@ -22,7 +22,7 @@ sugar = mesar.CellArtists(
 
 # spice cells
 spice = mesar.CellArtists(
-    get_color_attr = lambda cell: cell.spice,
+    get_color_attr=lambda cell: cell.spice,
     color_map="Reds",
     color_vmin=0,
     color_vmax=4,
@@ -52,7 +52,7 @@ canvas = mesar.Canvas(
     plots=[
         spice_space,
         sugar_space,
-        price_plot, 
+        price_plot,
         traders_plot,
     ],
     controllers=[
@@ -63,7 +63,7 @@ canvas = mesar.Canvas(
         metabolism_max,
         enable_trade,
         vision_min,
-        vision_max,  
+        vision_max,
     ],
 )
 

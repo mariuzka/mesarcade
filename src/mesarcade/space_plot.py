@@ -3,12 +3,12 @@ from mesarcade.figure import Figure
 
 class GridSpacePlot(Figure):
     def __init__(
-        self, 
-        artists=[], 
-        background_color="white", 
-        title=None, 
+        self,
+        artists=[],
+        background_color="white",
+        title=None,
         get_space=lambda model: model.grid,
-        ):
+    ):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
@@ -23,12 +23,12 @@ class GridSpacePlot(Figure):
 
 class ContinuousSpacePlot(Figure):
     def __init__(
-        self, 
-        artists=[], 
-        background_color="white", 
-        title=None, 
+        self,
+        artists=[],
+        background_color="white",
+        title=None,
         get_space=lambda model: model.space,
-        ):
+    ):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
@@ -40,14 +40,15 @@ class ContinuousSpacePlot(Figure):
             figure_type="continuous",
         )
 
+
 class NetworkPlot(Figure):
     def __init__(
-        self, 
-        artists=[], 
-        background_color="white", 
-        title=None, 
+        self,
+        artists=[],
+        background_color="white",
+        title=None,
         get_space=lambda model: model.grid,
-        ):
+    ):
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 

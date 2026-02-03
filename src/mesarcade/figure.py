@@ -6,13 +6,12 @@ from mesarcade.utils import parse_color
 
 class Figure:
     def __init__(
-        self, 
+        self,
         get_space,
         components=[],
-        background_color = "whitesmoke", 
+        background_color="whitesmoke",
         title: str | None = None,
         figure_type: str | None = None,
-        
     ):
         self.components = components
         self.background_color = parse_color(background_color)
@@ -26,19 +25,19 @@ class Figure:
         self.width = width
         self.height = height
         self.renderer = renderer
-        
+
         self.font_size = self.height * 0.03
 
         if self.figure_type == "network":
             pass
-        
+
         elif self.figure_type in ["grid", "continuous"]:
             space = self.get_space(self.renderer.model)
             self.space_width = space.width
             self.space_height = space.height
             self.cell_width = self.width / self.space_width
             self.cell_height = self.height / self.space_height
-          
+
         self.shape_list = self.shape_list = arcade.shape_list.ShapeElementList()
         self.text_batch = Batch()
         self.text_list = []
