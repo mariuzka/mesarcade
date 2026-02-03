@@ -83,10 +83,9 @@ class Canvas:
         # initialize arcade window
         self.window.show_view(new_view=self.renderer)
 
-
     def show(self) -> None:
         """Renders the canvas."""
-        
+
         # setup everything
         self._setup()
 

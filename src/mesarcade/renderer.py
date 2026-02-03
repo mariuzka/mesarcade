@@ -146,10 +146,10 @@ class Renderer(arcade.View):
                 fig_4_x = self.window_width / 2 + fig_width / 4 + self.atomic_height
                 fig_4_y = self.window_height / 2 - fig_width - self.atomic_height
                 fig_4.setup(
-                    x=fig_4_x, 
-                    y=fig_4_y, 
-                    width=fig_width, 
-                    height=fig_height, 
+                    x=fig_4_x,
+                    y=fig_4_y,
+                    width=fig_width,
+                    height=fig_height,
                     renderer=self,
                 )
 
@@ -163,7 +163,7 @@ class Renderer(arcade.View):
             controller.renderer = self
             controller.setup(i=i + 3)
         self.set_target_objects_of_controllers()
-    
+
     def draw_value_displays(self) -> None:
         self.tick_display.draw()
         self.fps_display.draw()
@@ -175,7 +175,7 @@ class Renderer(arcade.View):
         self.fps_display.update(new_value=int(arcade.get_fps(60)), force_update=force_update)
         for value_display in self.value_displays:
             value_display.update(force_update=force_update)
-        
+
     def setup_value_displays(self) -> None:
         self.tick_display = ValueDisplay(label="Tick", update_step=10)
         self.tick_display.setup(i=1, renderer=self, initial_value=self.tick)
@@ -184,7 +184,7 @@ class Renderer(arcade.View):
         self.fps_display.setup(i=2, renderer=self, initial_value=int(arcade.get_fps(60)))
 
         for i, value_display in enumerate(self.value_displays):
-            value_display.setup(i=i+3, renderer=self)
+            value_display.setup(i=i + 3, renderer=self)
 
     def add_default_buttons(self):
         DefaultButtons(renderer=self).add_to_anchor()
@@ -233,11 +233,11 @@ class Renderer(arcade.View):
     def on_rendering_step_change(self, slider_event):
         self.rendering_step_buttons.buttons.update()
         self.set_rendering_step(slider_event.new_value)
-    
+
     def draw_figures(self):
         for figure in self.figures:
             figure.draw()
-    
+
     def update_figures(self):
         for figure in self.figures:
             figure.update()

@@ -5,7 +5,7 @@ import mesarcade as mesar
 birds = mesar.ContinuousSpaceAgentArtists(
     dynamic_color=False,
     dynamic_population=False,
-    )
+)
 
 # space plot
 space = mesar.ContinuousSpacePlot(artists=[birds])

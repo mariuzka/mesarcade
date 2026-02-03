@@ -1,15 +1,16 @@
 import arcade
 from pyglet.graphics import Batch
 
+
 class ValueDisplay:
-    def  __init__(
-            self, 
-            model_attribute: str | None = None, 
-            label: str | None = None, 
-            update_step: int = 10,
-            from_datacollector = False,
-            get_model_attribute = None,
-            ):
+    def __init__(
+        self,
+        model_attribute: str | None = None,
+        label: str | None = None,
+        update_step: int = 10,
+        from_datacollector=False,
+        get_model_attribute=None,
+    ):
         """Displays the value of a given model attribute.
 
         Args:
@@ -22,9 +23,8 @@ class ValueDisplay:
         self.update_step = update_step
         self.from_datacollector = from_datacollector
         self.get_model_attribute = get_model_attribute
-        
 
-    def setup(self, i, renderer, initial_value = None):
+    def setup(self, i, renderer, initial_value=None):
         self.renderer = renderer
         self.model = self.renderer.model
 
@@ -49,8 +49,7 @@ class ValueDisplay:
             self.current_value = self.get_value_from_model()
         else:
             initial_value = "NA"
-        
-        
+
         self.label_element = arcade.Text(
             text=self.model_attribute if self.label is None else self.label,
             x=self.x_of_label,
@@ -58,7 +57,7 @@ class ValueDisplay:
             batch=self.text_batch,
             color=self.renderer.font_color,
             font_size=self.renderer.font_size,
-            )
+        )
         self.text_list.append(self.label_element)
 
         self.value_element = arcade.Text(
@@ -68,14 +67,14 @@ class ValueDisplay:
             batch=self.text_batch,
             color=self.renderer.font_color,
             font_size=self.renderer.font_size,
-            )
+        )
         self.text_list.append(self.value_element)
-    
+
     def get_value_from_model(self):
         # get the value from a model attribute
         if not self.from_datacollector and self.get_model_attribute is None:
             return str(getattr(self.model, self.model_attribute))
-        
+
         # get the value from the datacollector
         elif self.from_datacollector:
             return str(self.model.datacollector.model_vars[self.model_attribute][-1])
@@ -84,12 +83,12 @@ class ValueDisplay:
         else:
             return str(self.get_model_attribute(self.model))
 
-    def update(self, new_value = None, force_update = False):
+    def update(self, new_value=None, force_update=False):
         if self.renderer.tick % self.update_step == 0 or force_update:
             new_value = self.get_value_from_model() if new_value is None else new_value
             if new_value != self.current_value:
                 self.current_value = new_value
                 self.value_element.text = new_value
-            
+
     def draw(self):
         self.text_batch.draw()

@@ -43,7 +43,6 @@ class PlayButton(BigButton):
         self.renderer.update_value_displays(force_update=True)
         self.renderer.play = not self.renderer.play
         self.get_text()
-        
 
 
 class StepButton(BigButton):

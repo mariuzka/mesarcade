@@ -35,24 +35,28 @@ def rescale_array_column_inplace(
 
 class _ModelHistoryPlot:
     def __init__(
-        self, 
-        model_attributes: str, 
-        labels: list[str] | None = None, 
+        self,
+        model_attributes: str,
+        labels: list[str] | None = None,
         colors: list[str] | None = None,
         rendering_step: int = 5,
-        title = None,
+        title=None,
         legend: bool = True,
     ):
         if len(model_attributes) > 6:
             raise ValueError("Only 6 lines allowed!")
-        
+
         if labels is not None:
             if len(model_attributes) != len(labels):
-                raise ValueError("The arguments model_attributes and labels must have the same length.")
-        
+                raise ValueError(
+                    "The arguments model_attributes and labels must have the same length."
+                )
+
         if colors is not None:
             if len(model_attributes) != len(colors):
-                raise ValueError("The arguments model_attributes and colors must have the same length.")
+                raise ValueError(
+                    "The arguments model_attributes and colors must have the same length."
+                )
 
         self.model_attrs = model_attributes
         self.labels = labels
@@ -60,7 +64,6 @@ class _ModelHistoryPlot:
         self.legend = legend
         self.title = title
 
-        
         if colors is not None:
             self.colors = [parse_color(color) for color in colors]
         else:
@@ -180,10 +183,8 @@ class _ModelHistoryPlot:
 
         # check if it is time to update
         if tick % self.rendering_step == 0 or tick <= 1:
-            
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                
                 # check if the model has the attribute
                 # TODO: Improve this. Maybe ask whether to use the datacollector or not.
                 if hasattr(self.renderer.model, model_attr):
@@ -253,14 +254,14 @@ class _ModelHistoryPlot:
 
 class ModelHistoryPlot(Figure):
     def __init__(
-        self, 
-        model_attributes, 
-        labels=None, 
-        colors=None, 
-        legend=True, 
+        self,
+        model_attributes,
+        labels=None,
+        colors=None,
+        legend=True,
         title=None,
         rendering_step=3,
-        ):
+    ):
         if not isinstance(model_attributes, (list, tuple)):
             model_attributes = [model_attributes]
 
