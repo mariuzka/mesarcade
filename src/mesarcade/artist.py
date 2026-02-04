@@ -237,7 +237,9 @@ class CellAgentArtists(Artist):
         dynamic_position: bool = True,
         dynamic_population: bool = True,
         get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
-        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.cell.coordinate,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: (
+            agent.cell.coordinate
+        ),
     ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
@@ -372,7 +374,9 @@ class NetworkCellArtists(Artist):
         dynamic_population: bool = True,
         networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
         get_population: Callable[[mesa.Model], Any] = lambda model: model.grid,
-        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: cell._MESARCADE_NETWORK_POSITION,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: (
+            cell._MESARCADE_NETWORK_POSITION
+        ),
     ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
@@ -459,7 +463,9 @@ class NetworkAgentArtists(NetworkCellArtists):
         dynamic_population: bool = True,
         networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
         get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
-        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: (
+            agent.cell._MESARCADE_NETWORK_POSITION
+        ),
     ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,

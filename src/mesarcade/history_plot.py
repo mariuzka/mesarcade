@@ -77,11 +77,11 @@ class _ModelHistoryPlot:
                 arcade.color.PINK,
                 arcade.color.PURPLE,
             ]
-    
+
     def validate_input(self):
         if len(self.model_attrs) > 6:
             raise ValueError("Only 6 lines allowed!")
-        
+
         if self.labels is not None:
             if len(self.model_attrs) != len(self.labels):
                 raise ValueError(
@@ -93,7 +93,6 @@ class _ModelHistoryPlot:
                 raise ValueError(
                     "The arguments model_attributes and colors must have the same length."
                 )
-
 
     def setup(self, figure, renderer):
         self.figure = figure
@@ -211,7 +210,6 @@ class _ModelHistoryPlot:
         if tick % self.rendering_step == 0 or tick <= 1:
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                
                 # model attribute was given as string?
                 if isinstance(model_attr, str):
                     # get the value from a model attribute
@@ -222,11 +220,10 @@ class _ModelHistoryPlot:
                     else:
                         y_data = self.model.datacollector.model_vars[model_attr]
                         y = y_data[-1] if len(y_data) > 0 else None
-                
+
                 # or as lambda?
                 else:
                     y = model_attr(self.model)
-
 
                 # update min and max values
                 if y is not None and np.isfinite(y):

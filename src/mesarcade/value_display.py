@@ -54,7 +54,7 @@ class ValueDisplay:
             self.current_value = self.get_value_from_model()
         else:
             initial_value = "NA"
-        
+
         # get the label text
         if self.label is not None:
             label_text = self.label
@@ -62,7 +62,7 @@ class ValueDisplay:
             label_text = self.model_attribute
         else:
             label_text = "no label"
-        
+
         # create the label element
         self.label_element = arcade.Text(
             text=label_text,
@@ -93,11 +93,10 @@ class ValueDisplay:
             # get the value from the datacollector
             else:
                 return str(self.model.datacollector.model_vars[self.model_attribute][-1])
-        
+
         # get the value using a lambda function
         else:
             return str(self.model_attribute(self.model))
-
 
     def update(self, new_value=None, force_update=False):
         if self.renderer.tick % self.update_step == 0 or force_update:
