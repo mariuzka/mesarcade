@@ -10,6 +10,23 @@ if TYPE_CHECKING:
 
 
 class ValueDisplay:
+    """Displays the current value of a model attribute in the GUI.
+
+    Shows a labeled value that updates during the simulation. Useful for
+    displaying key metrics like population counts, resource levels, or
+    any other scalar value derived from the model.
+
+    Args:
+        model_attribute: The attribute to display. Can be a string (attribute
+            name) or a callable that takes a mesa.Model and returns a value.
+        label: Optional label text. If None, the attribute name is used for
+            string attributes, or "no label" for callables.
+        update_step: Simulation steps between value updates. Defaults to 10.
+        from_datacollector: If True, reads values from the model's datacollector
+            instead of directly from the model. Only works with string
+            attributes. Defaults to False.
+    """
+
     def __init__(
         self,
         model_attribute: str | Callable[[mesa.Model], Any] | None,
@@ -17,13 +34,6 @@ class ValueDisplay:
         update_step: int = 10,
         from_datacollector: bool = False,
     ) -> None:
-        """Displays the value of a given model attribute.
-
-        Args:
-            model_attribute (str | None, optional): The model attribute. Defaults to None.
-            label (str | None, optional): An optional label for the model attribute. Defaults to None.
-            update_step (int, optional): The number of steps after which the displayed value gets updated. Defaults to 10.
-        """
         self.model_attribute = model_attribute
         self.label = label
         self.update_step = update_step

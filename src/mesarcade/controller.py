@@ -54,6 +54,18 @@ class _Controller:
 
 
 class CatController(_Controller):
+    """A dropdown controller for categorical model parameters.
+
+    Displays a dropdown menu allowing users to select from predefined options
+    during the simulation.
+
+    Args:
+        parameter_name: Name of the model parameter to control.
+        parameter_value: Initial value of the parameter.
+        parameter_options: List of allowed values for the dropdown.
+        label: Optional display label. If None, parameter_name is used.
+    """
+
     def __init__(
         self,
         parameter_name: str,
@@ -86,6 +98,20 @@ class CatController(_Controller):
 
 
 class NumController(_Controller):
+    """A slider controller for numeric model parameters.
+
+    Displays a slider with +/- buttons allowing users to adjust numeric
+    parameters within a defined range during the simulation.
+
+    Args:
+        parameter_name: Name of the model parameter to control.
+        parameter_value: Initial value of the parameter.
+        min_value: Minimum allowed value.
+        max_value: Maximum allowed value.
+        step: Increment/decrement step size.
+        label: Optional display label. If None, parameter_name is used.
+    """
+
     def __init__(
         self,
         parameter_name: str,

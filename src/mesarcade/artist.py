@@ -218,8 +218,26 @@ class Artist:
 
 
 class CellAgentArtists(Artist):
-    """
-    A visual representation of CellAgents.
+    """Renders agents on a cell-based grid space.
+
+    Visualizes agents that live on cells.
+    Each agent is drawn at its cell's coordinate position.
+
+    Args:
+        color: Default color for all entities. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Entity shape, either "rect" or "circle".
+        size: Size multiplier relative to cell size. Defaults to 1.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
     """
 
     def __init__(
@@ -266,8 +284,26 @@ class CellAgentArtists(Artist):
 
 
 class CellArtists(Artist):
-    """
-    A visual representation of Cells.
+    """Renders cells of a grid space.
+
+    Visualizes the cells themselves (not agents on them). Useful for displaying
+    cell properties like terrain type, resource levels, or other cell attributes.
+
+    Args:
+        color: Default color for all cells. Used when color_attribute is None.
+        color_attribute: Cell attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Cell shape, either "rect" or "circle".
+        size: Size multiplier relative to cell size. Defaults to 1.
+        filter_entities: Callable to filter which cells are displayed.
+        jitter: If True, adds random offset to cell positions.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles cells being added/removed.
+        get_population: Callable returning the cell collection from model.
+        get_xy_position: Callable returning (x, y) position for a cell.
     """
 
     def __init__(
@@ -312,8 +348,26 @@ class CellArtists(Artist):
 
 
 class ContinuousSpaceAgentArtists(Artist):
-    """
-    A visual representation of ContinuousSpaceAgents.
+    """Renders agents in a continuous space.
+
+    Visualizes agents that move freely in continuous 2D space rather than
+    on a discrete grid. Positions are scaled to fit the plot area.
+
+    Args:
+        color: Default color for all agents. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Agent shape, either "rect" or "circle".
+        size: Size multiplier for agent sprites. Defaults to 2.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
     """
 
     def __init__(
@@ -358,6 +412,28 @@ class ContinuousSpaceAgentArtists(Artist):
 
 
 class NetworkCellArtists(Artist):
+    """Renders nodes and edges of a network graph.
+
+    Visualizes cells as nodes in a network layout.
+
+    Args:
+        color: Default color for all nodes. Used when color_attribute is None.
+        color_attribute: Cell attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Node shape, either "rect" or "circle".
+        size: Size multiplier for node sprites. Defaults to 2.
+        filter_entities: Callable to filter which nodes are displayed.
+        jitter: If True, adds random offset to node positions.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles nodes being added/removed.
+        networkx_layout: Layout function from networkx (e.g., spring_layout).
+        get_population: Callable returning the cell collection from model.
+        get_xy_position: Callable returning (x, y) position for a cell.
+    """
+
     def __init__(
         self,
         color: Color = "black",
@@ -447,6 +523,28 @@ class NetworkCellArtists(Artist):
 
 
 class NetworkAgentArtists(NetworkCellArtists):
+    """Renders agents on a network graph.
+
+    Visualizes agents that live on network nodes.
+
+    Args:
+        color: Default color for all agents. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Agent shape, either "rect" or "circle".
+        size: Size multiplier for agent sprites. Defaults to 2.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        networkx_layout: Layout function from networkx (e.g., spring_layout).
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
+    """
+
     def __init__(
         self,
         color: Color = "black",

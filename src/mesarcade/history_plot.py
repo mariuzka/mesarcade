@@ -282,9 +282,30 @@ class _ModelHistoryPlot:
 
 
 class ModelHistoryPlot(Figure):
+    """A line plot that displays the history of model attributes over time.
+
+    Tracks one or more model attributes and visualizes their values as lines
+    over the course of the simulation. Supports up to 6 lines.
+
+    Args:
+        model_attributes: List of model attributes to track. Each element can be
+            a string (attribute name) or a callable that takes a mesa.Model and
+            returns a numeric value.
+        labels: Optional labels for the legend. If None, attribute names are
+            used for string attributes, or "no label" for callables.
+        colors: Optional colors for the lines. Accepts color names, RGB tuples,
+            or RGBA tuples. Defaults to a predefined color palette.
+        legend: Whether to display a legend. Defaults to True.
+        title: Optional title for the plot.
+        from_datacollector: If True, reads values from the model's datacollector
+            instead of directly from model attributes. Only works with string
+            attributes. Defaults to False.
+        rendering_step: Simulation steps between plot updates. Defaults to 3.
+    """
+
     def __init__(
         self,
-        model_attributes: str | list[str],
+        model_attributes: list[str],
         labels: list[str] | None = None,
         colors: list[Color] | None = None,
         legend: bool = True,
@@ -292,9 +313,6 @@ class ModelHistoryPlot(Figure):
         from_datacollector: bool = False,
         rendering_step: int = 3,
     ) -> None:
-        if not isinstance(model_attributes, (list, tuple)):
-            model_attributes = [model_attributes]
-
         plot = _ModelHistoryPlot(
             model_attributes=model_attributes,
             labels=labels,
