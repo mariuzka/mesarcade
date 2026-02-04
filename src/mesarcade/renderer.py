@@ -177,10 +177,10 @@ class Renderer(arcade.View):
             value_display.update(force_update=force_update)
 
     def setup_value_displays(self) -> None:
-        self.tick_display = ValueDisplay(label="Tick", update_step=10)
+        self.tick_display = ValueDisplay(model_attribute=None, label="Tick", update_step=10)
         self.tick_display.setup(i=1, renderer=self, initial_value=self.tick)
 
-        self.fps_display = ValueDisplay(label="FPS", update_step=10)
+        self.fps_display = ValueDisplay(model_attribute=None, label="FPS", update_step=10)
         self.fps_display.setup(i=2, renderer=self, initial_value=int(arcade.get_fps(60)))
 
         for i, value_display in enumerate(self.value_displays):

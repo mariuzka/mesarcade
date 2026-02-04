@@ -6,6 +6,13 @@ import numpy as np
 from mesarcade.figure import Figure
 from mesarcade.utils import parse_color
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, Callable
+
+    import mesa
+
 # Type alias for color values
 Color = str | tuple[int, int, int] | tuple[int, int, int, int]
 
@@ -41,7 +48,7 @@ def rescale_array_column_inplace(
 class _ModelHistoryPlot:
     def __init__(
         self,
-        model_attributes: str,
+        model_attributes: list[str | Callable[[mesa.Model], Any]],
         labels: list[str] | None = None,
         colors: list[str] | None = None,
         rendering_step: int = 5,
@@ -49,27 +56,15 @@ class _ModelHistoryPlot:
         legend: bool = True,
         from_datacollector: bool = False,
     ):
-        if len(model_attributes) > 6:
-            raise ValueError("Only 6 lines allowed!")
-
-        if labels is not None:
-            if len(model_attributes) != len(labels):
-                raise ValueError(
-                    "The arguments model_attributes and labels must have the same length."
-                )
-
-        if colors is not None:
-            if len(model_attributes) != len(colors):
-                raise ValueError(
-                    "The arguments model_attributes and colors must have the same length."
-                )
-
         self.model_attrs = model_attributes
         self.labels = labels
         self.rendering_step = rendering_step
         self.legend = legend
         self.title = title
         self.from_datacollector = from_datacollector
+        self.colors = None
+
+        self.validate_input()
 
         if colors is not None:
             self.colors = [parse_color(color) for color in colors]
@@ -82,10 +77,28 @@ class _ModelHistoryPlot:
                 arcade.color.PINK,
                 arcade.color.PURPLE,
             ]
+    
+    def validate_input(self):
+        if len(self.model_attrs) > 6:
+            raise ValueError("Only 6 lines allowed!")
+        
+        if self.labels is not None:
+            if len(self.model_attrs) != len(self.labels):
+                raise ValueError(
+                    "The arguments model_attributes and labels must have the same length."
+                )
+
+        if self.colors is not None:
+            if len(self.model_attrs) != len(self.colors):
+                raise ValueError(
+                    "The arguments model_attributes and colors must have the same length."
+                )
+
 
     def setup(self, figure, renderer):
         self.figure = figure
         self.renderer = renderer
+        self.model = self.renderer.model
 
         self.x = self.figure.x
         self.y = self.figure.y
@@ -156,7 +169,13 @@ class _ModelHistoryPlot:
         label_x = self.figure.x + self.width * 0.1
         label_y = self.plot_area_y - self.height * 0.1
 
-        labels = self.model_attrs if self.labels is None else self.labels
+        if self.labels is not None:
+            labels = self.labels
+        elif self.labels is None and isinstance(self.model_attrs[0], str):
+            labels = self.model_attrs
+        else:
+            labels = ["no label"] * len(self.model_attrs)
+
         for i, label in enumerate(labels):
             if i % 2 == 0:
                 label_y -= self.font_size * 2
@@ -192,14 +211,22 @@ class _ModelHistoryPlot:
         if tick % self.rendering_step == 0 or tick <= 1:
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                # get the value from a model attribute
-                if not self.from_datacollector:
-                    y = getattr(self.renderer.model, model_attr)
+                
+                # model attribute was given as string?
+                if isinstance(model_attr, str):
+                    # get the value from a model attribute
+                    if not self.from_datacollector:
+                        y = getattr(self.model, model_attr)
 
-                # or get the value from the datacollector
+                    # or get the value from the datacollector
+                    else:
+                        y_data = self.model.datacollector.model_vars[model_attr]
+                        y = y_data[-1] if len(y_data) > 0 else None
+                
+                # or as lambda?
                 else:
-                    y_data = self.renderer.model.datacollector.model_vars[model_attr]
-                    y = y_data[-1] if len(y_data) > 0 else None
+                    y = model_attr(self.model)
+
 
                 # update min and max values
                 if y is not None and np.isfinite(y):
