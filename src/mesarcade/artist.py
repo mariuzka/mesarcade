@@ -1,32 +1,40 @@
+from __future__ import annotations
+
+import math
+from typing import TYPE_CHECKING, Any, Callable, Literal
+
 import arcade
 import matplotlib
 import matplotlib.colors
 import networkx as nx
-import math
-
-from typing import Callable
 
 from mesarcade.utils import parse_color
+
+if TYPE_CHECKING:
+    import mesa
+
+# Type alias for color values
+Color = str | tuple[int, int, int] | tuple[int, int, int, int] | list[int] | None
 
 
 class Artist:
     def __init__(
         self,
-        get_xy_position: Callable,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | dict | None = "bwr",
+        get_xy_position: Callable[[Any], tuple[float, float]],
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "rect",
+        shape: Literal["rect", "circle"] = "rect",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: None,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: None,
+    ) -> None:
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
         self.color_map: str | dict | None = color_map
@@ -144,14 +152,6 @@ class Artist:
                 radius=max(1, min(self.width, self.height) / 2),
                 color=arcade.color.BABY_BLUE,  # platzhalter
             )
-        elif self.shape == "line":
-            sprite = arcade.SpriteSequence()
-
-            draw_line_strip(
-                self.scaled_data_dict[model_attr],
-                color=self.color_list[i],
-                line_width=2,
-            )
 
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
@@ -224,21 +224,21 @@ class CellAgentArtists(Artist):
 
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.cell.coordinate,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.cell.coordinate,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -270,21 +270,21 @@ class CellArtists(Artist):
 
     def __init__(
         self,
-        color: str | tuple | list | None = "grey",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "grey",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "rect",
+        shape: Literal["rect", "circle"] = "rect",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = False,
         dynamic_population: bool = True,
-        get_population=lambda model: model.grid,
-        get_xy_position=lambda cell: cell.coordinate,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.grid,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: cell.coordinate,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -316,21 +316,21 @@ class ContinuousSpaceAgentArtists(Artist):
 
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.position,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.position,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -358,22 +358,22 @@ class ContinuousSpaceAgentArtists(Artist):
 class NetworkCellArtists(Artist):
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout=nx.spring_layout,
-        get_population=lambda model: model.grid,
-        get_xy_position=lambda cell: cell._MESARCADE_NETWORK_POSITION,
-    ):
+        networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.grid,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: cell._MESARCADE_NETWORK_POSITION,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -445,22 +445,22 @@ class NetworkCellArtists(Artist):
 class NetworkAgentArtists(NetworkCellArtists):
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout=nx.spring_layout,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
-    ):
+        networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,

@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import arcade
 import numpy as np
-from mesarcade.figure import Figure
 
+from mesarcade.figure import Figure
 from mesarcade.utils import parse_color
+
+# Type alias for color values
+Color = str | tuple[int, int, int] | tuple[int, int, int, int]
 
 
 def rescale(value, old_min, old_max, new_min, new_max):
@@ -255,14 +260,14 @@ class _ModelHistoryPlot:
 class ModelHistoryPlot(Figure):
     def __init__(
         self,
-        model_attributes,
-        labels=None,
-        colors=None,
-        legend=True,
-        title=None,
-        from_datacollector=False,
-        rendering_step=3,
-    ):
+        model_attributes: str | list[str],
+        labels: list[str] | None = None,
+        colors: list[Color] | None = None,
+        legend: bool = True,
+        title: str | None = None,
+        from_datacollector: bool = False,
+        rendering_step: int = 3,
+    ) -> None:
         if not isinstance(model_attributes, (list, tuple)):
             model_attributes = [model_attributes]
 

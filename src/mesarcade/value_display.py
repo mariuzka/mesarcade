@@ -1,5 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
+
 import arcade
 from pyglet.graphics import Batch
+
+if TYPE_CHECKING:
+    import mesa
 
 
 class ValueDisplay:
@@ -8,9 +15,9 @@ class ValueDisplay:
         model_attribute: str | None = None,
         label: str | None = None,
         update_step: int = 10,
-        from_datacollector=False,
-        get_model_attribute=None,
-    ):
+        from_datacollector: bool = False,
+        get_model_attribute: Callable[[mesa.Model], Any] | None = None,
+    ) -> None:
         """Displays the value of a given model attribute.
 
         Args:

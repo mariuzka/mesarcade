@@ -1,7 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import arcade
 import mesa
 
 from mesarcade.renderer import Renderer
+
+if TYPE_CHECKING:
+    from mesarcade.figure import Figure
+    from mesarcade.controller import NumController, CatController
+    from mesarcade.value_display import ValueDisplay
 
 
 class Canvas:
@@ -10,9 +19,9 @@ class Canvas:
     def __init__(
         self,
         model_class: type[mesa.Model],
-        plots: list = [],
-        controllers: list = [],
-        value_displays: list = [],
+        plots: list[Figure] = [],
+        controllers: list[NumController | CatController] = [],
+        value_displays: list[ValueDisplay] = [],
         window_width: int = 1200,
         window_title: str = "mesarcade",
         target_fps: int = 40,

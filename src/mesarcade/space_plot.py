@@ -1,14 +1,22 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
+
 from mesarcade.figure import Figure
+
+if TYPE_CHECKING:
+    import mesa
+    from mesarcade.artist import Artist
 
 
 class GridSpacePlot(Figure):
     def __init__(
         self,
-        artists=[],
-        background_color="white",
-        title=None,
-        get_space=lambda model: model.grid,
-    ):
+        artists: Artist | list[Artist] = [],
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        title: str | None = None,
+        get_space: Callable[[mesa.Model], Any] = lambda model: model.grid,
+    ) -> None:
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
@@ -24,11 +32,11 @@ class GridSpacePlot(Figure):
 class ContinuousSpacePlot(Figure):
     def __init__(
         self,
-        artists=[],
-        background_color="white",
-        title=None,
-        get_space=lambda model: model.space,
-    ):
+        artists: Artist | list[Artist] = [],
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        title: str | None = None,
+        get_space: Callable[[mesa.Model], Any] = lambda model: model.space,
+    ) -> None:
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 
@@ -44,11 +52,11 @@ class ContinuousSpacePlot(Figure):
 class NetworkPlot(Figure):
     def __init__(
         self,
-        artists=[],
-        background_color="white",
-        title=None,
-        get_space=lambda model: model.grid,
-    ):
+        artists: Artist | list[Artist] = [],
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        title: str | None = None,
+        get_space: Callable[[mesa.Model], Any] = lambda model: model.grid,
+    ) -> None:
         if not isinstance(artists, (list, tuple)):
             artists = [artists]
 

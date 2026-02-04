@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import arcade
 import arcade.gui
 import arcade.gui.widgets.text
@@ -52,12 +56,12 @@ class _Controller:
 class CatController(_Controller):
     def __init__(
         self,
-        parameter_name,
-        parameter_value,
-        parameter_options=[],
-        label=None,
-        _target_object=None,
-    ):
+        parameter_name: str,
+        parameter_value: Any,
+        parameter_options: list[Any] = [],
+        label: str | None = None,
+        _target_object: Any = None,
+    ) -> None:
         super().__init__(
             parameter_name,
             parameter_value,
@@ -84,14 +88,14 @@ class CatController(_Controller):
 class NumController(_Controller):
     def __init__(
         self,
-        parameter_name,
-        parameter_value,
-        min_value,
-        max_value,
-        step,
-        label=None,
-        _target_object=None,
-    ):
+        parameter_name: str,
+        parameter_value: float | int,
+        min_value: float | int,
+        max_value: float | int,
+        step: float | int,
+        label: str | None = None,
+        _target_object: Any = None,
+    ) -> None:
         super().__init__(
             parameter_name=parameter_name,
             parameter_value=parameter_value,
