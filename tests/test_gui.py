@@ -3,6 +3,7 @@ from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
 from mesa.examples.basic.schelling.model import Schelling
 from mesa.examples.basic.virus_on_network.model import VirusOnNetwork
 from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
+from mesa.examples.basic.boid_flockers.model import BoidFlockers
 
 import networkx as nx
 
@@ -17,6 +18,33 @@ def run_gui_test(canvas, n_steps=10):
         canvas.renderer.on_draw()
 
     canvas.window.close()
+
+
+def test_boid_flockers():
+    # artists
+    birds = mesar.ContinuousSpaceAgentArtists(
+        dynamic_color=False,
+        dynamic_population=False,
+    )
+
+    # space plot
+    space = mesar.ContinuousSpacePlot(artists=[birds])
+
+    # controllers
+    population_size = mesar.NumController("population_size", 100, 10, 1000, 50)
+    speed = mesar.NumController("speed", 5, 1, 20, 1)
+    vision = mesar.NumController("vision", 10, 1, 50, 1)
+    separation = mesar.NumController("separation", 2, 1, 20, 1)
+
+    # gui window
+    canvas = mesar.Canvas(
+        model_class=BoidFlockers,
+        plots=[space],
+        controllers=[population_size, speed, vision, separation],
+        _visible=False,
+    )
+
+    run_gui_test(canvas)
 
 
 def test_game_of_life():
