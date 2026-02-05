@@ -21,9 +21,9 @@ def rescale(value, old_min, old_max, new_min, new_max):
     old_range = old_max - old_min
     new_range = new_max - new_min
     if old_range > 0:
-        return (value - old_min) / old_range * new_range + new_max
+        return (value - old_min) / old_range * new_range + new_min
     else:
-        return (value - old_min) * new_range + new_max
+        return (value - old_min) * new_range + new_min
 
 
 def rescale_array_column_inplace(
@@ -40,15 +40,16 @@ def rescale_array_column_inplace(
     new_range = new_max - new_min
 
     if old_range > 0:
-        values[:] = (values - old_min) / old_range * new_range + new_max
+        values[:] = (values - old_min) / old_range * new_range + new_min
     else:
-        values[:] = (values - old_min) * new_range + new_max
+        values[:] = (values - old_min) * new_range + new_min
 
 
 class _ModelHistoryPlot:
     def __init__(
         self,
         model_attributes: list[str | Callable[[mesa.Model], Any]],
+        ylim: list[float | None, float | None] | None = None,
         labels: list[str] | None = None,
         colors: list[str] | None = None,
         rendering_step: int = 5,
@@ -57,6 +58,8 @@ class _ModelHistoryPlot:
         from_datacollector: bool = False,
     ):
         self.model_attrs = model_attributes
+        self.lower_y_lim = ylim[0] if ylim is not None else None
+        self.upper_y_lim = ylim[1] if ylim is not None else None
         self.labels = labels
         self.rendering_step = rendering_step
         self.legend = legend
@@ -114,8 +117,8 @@ class _ModelHistoryPlot:
 
         self.data_dict = {model_attr: [] for model_attr in self.model_attrs}
         self.scaled_data_dict = {model_attr: [] for model_attr in self.model_attrs}
-        self.min_y = 0
-        self.max_y = 0
+        self.min_y = self.lower_y_lim
+        self.max_y = self.upper_y_lim
         self.min_x = 0
         self.max_x = 0
 
@@ -225,34 +228,46 @@ class _ModelHistoryPlot:
                 else:
                     y = model_attr(self.model)
 
-                # update min and max values
+                # set min and max values initially
+                if self.max_y is None:
+                    self.max_y = y + 0.000001 * y
+                if self.min_y is None:
+                    self.min_y = y
+
+                # if there valid new data
                 if y is not None and np.isfinite(y):
-                    if y > self.max_y:
-                        self.max_y = y
-                    elif y < self.min_y:
-                        self.min_y = y
+                    
+                    # add new data point
                     self.data_dict[model_attr].append((tick, y))
+
+                    # update min and max values
+                    if self.lower_y_lim is None:
+                        if y < self.min_y:
+                            self.min_y = y
+                    
+                    if self.upper_y_lim is None:
+                        if y > self.max_y:
+                            self.max_y = y
 
                 # Rescale the data
                 # TODO: Optimize this with numpy
+                padding = 10
                 self.scaled_data_dict[model_attr] = [
                     (
                         rescale(
                             value=x,
                             old_min=0,
                             old_max=tick,
-                            new_min=self.plot_area_x,
-                            new_max=self.plot_area_x + self.plot_area_width,
-                        )
-                        - self.plot_area_width,
+                            new_min=self.plot_area_x + padding,
+                            new_max=self.plot_area_x + self.plot_area_width - padding,
+                        ),
                         rescale(
                             value=y,
                             old_min=self.min_y,
                             old_max=self.max_y,
-                            new_min=self.plot_area_y,
-                            new_max=self.plot_area_y + self.plot_area_height,
-                        )
-                        - self.plot_area_height,
+                            new_min=self.plot_area_y + padding,
+                            new_max=self.plot_area_y + self.plot_area_height - padding,
+                        ),
                     )
                     for x, y in self.data_dict[model_attr]
                 ]
@@ -306,6 +321,7 @@ class ModelHistoryPlot(Figure):
     def __init__(
         self,
         model_attributes: list[str],
+        ylim: list[float, float] | None = None,
         labels: list[str] | None = None,
         colors: list[Color] | None = None,
         legend: bool = True,
@@ -315,6 +331,7 @@ class ModelHistoryPlot(Figure):
     ) -> None:
         plot = _ModelHistoryPlot(
             model_attributes=model_attributes,
+            ylim=ylim,
             labels=labels,
             colors=colors,
             legend=legend,
