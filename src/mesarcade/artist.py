@@ -1,32 +1,40 @@
+from __future__ import annotations
+
+import math
+from typing import TYPE_CHECKING, Any, Callable, Literal
+
 import arcade
 import matplotlib
 import matplotlib.colors
 import networkx as nx
-import math
-
-from typing import Callable
 
 from mesarcade.utils import parse_color
+
+if TYPE_CHECKING:
+    import mesa
+
+# Type alias for color values
+Color = str | tuple[int, int, int] | tuple[int, int, int, int] | list[int] | None
 
 
 class Artist:
     def __init__(
         self,
-        get_xy_position: Callable,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | dict | None = "bwr",
+        get_xy_position: Callable[[Any], tuple[float, float]],
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "rect",
+        shape: Literal["rect", "circle"] = "rect",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: None,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: None,
+    ) -> None:
         self.color = parse_color(color=color)
         self.color_attribute = color_attribute
         self.color_map: str | dict | None = color_map
@@ -144,14 +152,6 @@ class Artist:
                 radius=max(1, min(self.width, self.height) / 2),
                 color=arcade.color.BABY_BLUE,  # platzhalter
             )
-        elif self.shape == "line":
-            sprite = arcade.SpriteSequence()
-
-            draw_line_strip(
-                self.scaled_data_dict[model_attr],
-                color=self.color_list[i],
-                line_width=2,
-            )
 
         if self.jitter:
             sprite.mesar_x_jitter = (self.model.random.random() - 0.5) * self.figure.cell_width
@@ -218,27 +218,47 @@ class Artist:
 
 
 class CellAgentArtists(Artist):
-    """
-    A visual representation of CellAgents.
+    """Renders agents on a cell-based grid space.
+
+    Visualizes agents that live on cells.
+    Each agent is drawn at its cell's coordinate position.
+
+    Args:
+        color: Default color for all entities. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Entity shape, either "rect" or "circle".
+        size: Size multiplier relative to cell size. Defaults to 1.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
     """
 
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.cell.coordinate,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: (
+            agent.cell.coordinate
+        ),
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -264,27 +284,45 @@ class CellAgentArtists(Artist):
 
 
 class CellArtists(Artist):
-    """
-    A visual representation of Cells.
+    """Renders cells of a grid space.
+
+    Visualizes the cells themselves (not agents on them). Useful for displaying
+    cell properties like terrain type, resource levels, or other cell attributes.
+
+    Args:
+        color: Default color for all cells. Used when color_attribute is None.
+        color_attribute: Cell attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Cell shape, either "rect" or "circle".
+        size: Size multiplier relative to cell size. Defaults to 1.
+        filter_entities: Callable to filter which cells are displayed.
+        jitter: If True, adds random offset to cell positions.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles cells being added/removed.
+        get_population: Callable returning the cell collection from model.
+        get_xy_position: Callable returning (x, y) position for a cell.
     """
 
     def __init__(
         self,
-        color: str | tuple | list | None = "grey",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "grey",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "rect",
+        shape: Literal["rect", "circle"] = "rect",
         size: float = 1,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = False,
         dynamic_population: bool = True,
-        get_population=lambda model: model.grid,
-        get_xy_position=lambda cell: cell.coordinate,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.grid,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: cell.coordinate,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -310,27 +348,45 @@ class CellArtists(Artist):
 
 
 class ContinuousSpaceAgentArtists(Artist):
-    """
-    A visual representation of ContinuousSpaceAgents.
+    """Renders agents in a continuous space.
+
+    Visualizes agents that move freely in continuous 2D space rather than
+    on a discrete grid. Positions are scaled to fit the plot area.
+
+    Args:
+        color: Default color for all agents. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Agent shape, either "rect" or "circle".
+        size: Size multiplier for agent sprites. Defaults to 2.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
     """
 
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.position,
-    ):
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: agent.position,
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -356,24 +412,48 @@ class ContinuousSpaceAgentArtists(Artist):
 
 
 class NetworkCellArtists(Artist):
+    """Renders nodes and edges of a network graph.
+
+    Visualizes cells as nodes in a network layout.
+
+    Args:
+        color: Default color for all nodes. Used when color_attribute is None.
+        color_attribute: Cell attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Node shape, either "rect" or "circle".
+        size: Size multiplier for node sprites. Defaults to 2.
+        filter_entities: Callable to filter which nodes are displayed.
+        jitter: If True, adds random offset to node positions.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles nodes being added/removed.
+        networkx_layout: Layout function from networkx (e.g., spring_layout).
+        get_population: Callable returning the cell collection from model.
+        get_xy_position: Callable returning (x, y) position for a cell.
+    """
+
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout=nx.spring_layout,
-        get_population=lambda model: model.grid,
-        get_xy_position=lambda cell: cell._MESARCADE_NETWORK_POSITION,
-    ):
+        networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.grid,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda cell: (
+            cell._MESARCADE_NETWORK_POSITION
+        ),
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,
@@ -443,24 +523,48 @@ class NetworkCellArtists(Artist):
 
 
 class NetworkAgentArtists(NetworkCellArtists):
+    """Renders agents on a network graph.
+
+    Visualizes agents that live on network nodes.
+
+    Args:
+        color: Default color for all agents. Used when color_attribute is None.
+        color_attribute: Agent attribute name or callable to determine color.
+        color_map: Matplotlib colormap name or dict mapping values to colors.
+        color_vmin: Minimum value for colormap normalization.
+        color_vmax: Maximum value for colormap normalization.
+        shape: Agent shape, either "rect" or "circle".
+        size: Size multiplier for agent sprites. Defaults to 2.
+        filter_entities: Callable to filter which agents are displayed.
+        jitter: If True, adds random offset to prevent overlap.
+        dynamic_color: If True, updates colors each frame.
+        dynamic_position: If True, updates positions each frame.
+        dynamic_population: If True, handles agents being added/removed.
+        networkx_layout: Layout function from networkx (e.g., spring_layout).
+        get_population: Callable returning the agent collection from model.
+        get_xy_position: Callable returning (x, y) position for an agent.
+    """
+
     def __init__(
         self,
-        color: str | tuple | list | None = "black",
-        color_attribute: str | Callable | None = None,
-        color_map: str | None = "bwr",
+        color: Color = "black",
+        color_attribute: str | Callable[[Any], Any] | None = None,
+        color_map: str | dict[Any, Color] | None = "bwr",
         color_vmin: float | None = None,
         color_vmax: float | None = None,
-        shape: str = "circle",
+        shape: Literal["rect", "circle"] = "circle",
         size: float = 2,
-        filter_entities=lambda entity: True,
+        filter_entities: Callable[[Any], bool] = lambda entity: True,
         jitter: bool = False,
         dynamic_color: bool = True,
         dynamic_position: bool = True,
         dynamic_population: bool = True,
-        networkx_layout=nx.spring_layout,
-        get_population=lambda model: model.agents,
-        get_xy_position=lambda agent: agent.cell._MESARCADE_NETWORK_POSITION,
-    ):
+        networkx_layout: Callable[..., dict[Any, Any]] = nx.spring_layout,
+        get_population: Callable[[mesa.Model], Any] = lambda model: model.agents,
+        get_xy_position: Callable[[Any], tuple[float, float]] = lambda agent: (
+            agent.cell._MESARCADE_NETWORK_POSITION
+        ),
+    ) -> None:
         super().__init__(
             get_xy_position=get_xy_position,
             color=color,

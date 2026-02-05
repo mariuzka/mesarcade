@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 import arcade
 import arcade.gui
 import arcade.gui.widgets.text
@@ -50,14 +54,26 @@ class _Controller:
 
 
 class CatController(_Controller):
+    """A dropdown controller for categorical model parameters.
+
+    Displays a dropdown menu allowing users to select from predefined options
+    during the simulation.
+
+    Args:
+        parameter_name: Name of the model parameter to control.
+        parameter_value: Initial value of the parameter.
+        parameter_options: List of allowed values for the dropdown.
+        label: Optional display label. If None, parameter_name is used.
+    """
+
     def __init__(
         self,
-        parameter_name,
-        parameter_value,
-        parameter_options=[],
-        label=None,
-        _target_object=None,
-    ):
+        parameter_name: str,
+        parameter_value: Any,
+        parameter_options: list[Any] = [],
+        label: str | None = None,
+        _target_object: Any = None,
+    ) -> None:
         super().__init__(
             parameter_name,
             parameter_value,
@@ -82,16 +98,30 @@ class CatController(_Controller):
 
 
 class NumController(_Controller):
+    """A slider controller for numeric model parameters.
+
+    Displays a slider with +/- buttons allowing users to adjust numeric
+    parameters within a defined range during the simulation.
+
+    Args:
+        parameter_name: Name of the model parameter to control.
+        parameter_value: Initial value of the parameter.
+        min_value: Minimum allowed value.
+        max_value: Maximum allowed value.
+        step: Increment/decrement step size.
+        label: Optional display label. If None, parameter_name is used.
+    """
+
     def __init__(
         self,
-        parameter_name,
-        parameter_value,
-        min_value,
-        max_value,
-        step,
-        label=None,
-        _target_object=None,
-    ):
+        parameter_name: str,
+        parameter_value: float | int,
+        min_value: float | int,
+        max_value: float | int,
+        step: float | int,
+        label: str | None = None,
+        _target_object: Any = None,
+    ) -> None:
         super().__init__(
             parameter_name=parameter_name,
             parameter_value=parameter_value,

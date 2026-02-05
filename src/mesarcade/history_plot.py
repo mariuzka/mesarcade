@@ -1,17 +1,29 @@
+from __future__ import annotations
+
 import arcade
 import numpy as np
-from mesarcade.figure import Figure
 
+from mesarcade.figure import Figure
 from mesarcade.utils import parse_color
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, Callable
+
+    import mesa
+
+# Type alias for color values
+Color = str | tuple[int, int, int] | tuple[int, int, int, int]
 
 
 def rescale(value, old_min, old_max, new_min, new_max):
     old_range = old_max - old_min
     new_range = new_max - new_min
     if old_range > 0:
-        return (value - old_min) / old_range * new_range + new_max
+        return (value - old_min) / old_range * new_range + new_min
     else:
-        return (value - old_min) * new_range + new_max
+        return (value - old_min) * new_range + new_min
 
 
 def rescale_array_column_inplace(
@@ -28,15 +40,16 @@ def rescale_array_column_inplace(
     new_range = new_max - new_min
 
     if old_range > 0:
-        values[:] = (values - old_min) / old_range * new_range + new_max
+        values[:] = (values - old_min) / old_range * new_range + new_min
     else:
-        values[:] = (values - old_min) * new_range + new_max
+        values[:] = (values - old_min) * new_range + new_min
 
 
 class _ModelHistoryPlot:
     def __init__(
         self,
-        model_attributes: str,
+        model_attributes: list[str | Callable[[mesa.Model], Any]],
+        ylim: list[float | None, float | None] | None = None,
         labels: list[str] | None = None,
         colors: list[str] | None = None,
         rendering_step: int = 5,
@@ -44,27 +57,17 @@ class _ModelHistoryPlot:
         legend: bool = True,
         from_datacollector: bool = False,
     ):
-        if len(model_attributes) > 6:
-            raise ValueError("Only 6 lines allowed!")
-
-        if labels is not None:
-            if len(model_attributes) != len(labels):
-                raise ValueError(
-                    "The arguments model_attributes and labels must have the same length."
-                )
-
-        if colors is not None:
-            if len(model_attributes) != len(colors):
-                raise ValueError(
-                    "The arguments model_attributes and colors must have the same length."
-                )
-
         self.model_attrs = model_attributes
+        self.lower_y_lim = ylim[0] if ylim is not None else None
+        self.upper_y_lim = ylim[1] if ylim is not None else None
         self.labels = labels
         self.rendering_step = rendering_step
         self.legend = legend
         self.title = title
         self.from_datacollector = from_datacollector
+        self.colors = None
+
+        self.validate_input()
 
         if colors is not None:
             self.colors = [parse_color(color) for color in colors]
@@ -78,9 +81,26 @@ class _ModelHistoryPlot:
                 arcade.color.PURPLE,
             ]
 
+    def validate_input(self):
+        if len(self.model_attrs) > 6:
+            raise ValueError("Only 6 lines allowed!")
+
+        if self.labels is not None:
+            if len(self.model_attrs) != len(self.labels):
+                raise ValueError(
+                    "The arguments model_attributes and labels must have the same length."
+                )
+
+        if self.colors is not None:
+            if len(self.model_attrs) != len(self.colors):
+                raise ValueError(
+                    "The arguments model_attributes and colors must have the same length."
+                )
+
     def setup(self, figure, renderer):
         self.figure = figure
         self.renderer = renderer
+        self.model = self.renderer.model
 
         self.x = self.figure.x
         self.y = self.figure.y
@@ -97,8 +117,8 @@ class _ModelHistoryPlot:
 
         self.data_dict = {model_attr: [] for model_attr in self.model_attrs}
         self.scaled_data_dict = {model_attr: [] for model_attr in self.model_attrs}
-        self.min_y = 0
-        self.max_y = 0
+        self.min_y = self.lower_y_lim
+        self.max_y = self.upper_y_lim
         self.min_x = 0
         self.max_x = 0
 
@@ -151,7 +171,13 @@ class _ModelHistoryPlot:
         label_x = self.figure.x + self.width * 0.1
         label_y = self.plot_area_y - self.height * 0.1
 
-        labels = self.model_attrs if self.labels is None else self.labels
+        if self.labels is not None:
+            labels = self.labels
+        elif self.labels is None and isinstance(self.model_attrs[0], str):
+            labels = self.model_attrs
+        else:
+            labels = ["no label"] * len(self.model_attrs)
+
         for i, label in enumerate(labels):
             if i % 2 == 0:
                 label_y -= self.font_size * 2
@@ -187,43 +213,60 @@ class _ModelHistoryPlot:
         if tick % self.rendering_step == 0 or tick <= 1:
             # for each model attribute that has to be collected
             for model_attr in self.model_attrs:
-                # get the value from a model attribute
-                if not self.from_datacollector:
-                    y = getattr(self.renderer.model, model_attr)
+                # model attribute was given as string?
+                if isinstance(model_attr, str):
+                    # get the value from a model attribute
+                    if not self.from_datacollector:
+                        y = getattr(self.model, model_attr)
 
-                # or get the value from the datacollector
+                    # or get the value from the datacollector
+                    else:
+                        y_data = self.model.datacollector.model_vars[model_attr]
+                        y = y_data[-1] if len(y_data) > 0 else None
+
+                # or as lambda?
                 else:
-                    y_data = self.renderer.model.datacollector.model_vars[model_attr]
-                    y = y_data[-1] if len(y_data) > 0 else None
+                    y = model_attr(self.model)
 
-                # update min and max values
+                # set min and max values initially
+                if self.max_y is None:
+                    self.max_y = y + 0.000001 * y
+                if self.min_y is None:
+                    self.min_y = y
+
+                # if there valid new data
                 if y is not None and np.isfinite(y):
-                    if y > self.max_y:
-                        self.max_y = y
-                    elif y < self.min_y:
-                        self.min_y = y
+                    # add new data point
                     self.data_dict[model_attr].append((tick, y))
+
+                    # update min and max values
+                    if self.lower_y_lim is None:
+                        if y < self.min_y:
+                            self.min_y = y
+
+                    if self.upper_y_lim is None:
+                        if y > self.max_y:
+                            self.max_y = y
 
                 # Rescale the data
                 # TODO: Optimize this with numpy
+                padding = 10
                 self.scaled_data_dict[model_attr] = [
                     (
                         rescale(
                             value=x,
                             old_min=0,
                             old_max=tick,
-                            new_min=self.plot_area_x,
-                            new_max=self.plot_area_x + self.plot_area_width,
-                        )
-                        - self.plot_area_width,
+                            new_min=self.plot_area_x + padding,
+                            new_max=self.plot_area_x + self.plot_area_width - padding,
+                        ),
                         rescale(
                             value=y,
                             old_min=self.min_y,
                             old_max=self.max_y,
-                            new_min=self.plot_area_y,
-                            new_max=self.plot_area_y + self.plot_area_height,
-                        )
-                        - self.plot_area_height,
+                            new_min=self.plot_area_y + padding,
+                            new_max=self.plot_area_y + self.plot_area_height - padding,
+                        ),
                     )
                     for x, y in self.data_dict[model_attr]
                 ]
@@ -253,21 +296,41 @@ class _ModelHistoryPlot:
 
 
 class ModelHistoryPlot(Figure):
+    """A line plot that displays the history of model attributes over time.
+
+    Tracks one or more model attributes and visualizes their values as lines
+    over the course of the simulation. Supports up to 6 lines.
+
+    Args:
+        model_attributes: List of model attributes to track. Each element can be
+            a string (attribute name) or a callable that takes a mesa.Model and
+            returns a numeric value.
+        labels: Optional labels for the legend. If None, attribute names are
+            used for string attributes, or "no label" for callables.
+        colors: Optional colors for the lines. Accepts color names, RGB tuples,
+            or RGBA tuples. Defaults to a predefined color palette.
+        legend: Whether to display a legend. Defaults to True.
+        title: Optional title for the plot.
+        from_datacollector: If True, reads values from the model's datacollector
+            instead of directly from model attributes. Only works with string
+            attributes. Defaults to False.
+        rendering_step: Simulation steps between plot updates. Defaults to 3.
+    """
+
     def __init__(
         self,
-        model_attributes,
-        labels=None,
-        colors=None,
-        legend=True,
-        title=None,
-        from_datacollector=False,
-        rendering_step=3,
-    ):
-        if not isinstance(model_attributes, (list, tuple)):
-            model_attributes = [model_attributes]
-
+        model_attributes: list[str],
+        ylim: list[float, float] | None = None,
+        labels: list[str] | None = None,
+        colors: list[Color] | None = None,
+        legend: bool = True,
+        title: str | None = None,
+        from_datacollector: bool = False,
+        rendering_step: int = 3,
+    ) -> None:
         plot = _ModelHistoryPlot(
             model_attributes=model_attributes,
+            ylim=ylim,
             labels=labels,
             colors=colors,
             legend=legend,

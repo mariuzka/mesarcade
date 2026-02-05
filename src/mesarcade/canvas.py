@@ -1,51 +1,51 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import arcade
 import mesa
 
 from mesarcade.renderer import Renderer
 
+if TYPE_CHECKING:
+    from mesarcade.figure import Figure
+    from mesarcade.controller import NumController, CatController
+    from mesarcade.value_display import ValueDisplay
+
 
 class Canvas:
-    """The main GUI window."""
+    """The main GUI window for visualizing mesa agent-based models.
+
+    Creates an interactive window that displays plots, controls, and value
+    displays for a mesa simulation. Call show() to start the visualization.
+
+    Args:
+        model_class: The mesa model class to instantiate and visualize.
+        plots: List of plots (e.g., GridSpacePlot, ModelHistoryPlot) to display.
+            Maximum 4 plots supported.
+        controllers: List of controllers (NumController, CatController) for
+            adjusting model parameters interactively.
+        value_displays: List of ValueDisplay instances showing model metrics.
+        window_width: Window width in pixels. Height is calculated as 60% of
+            width. Defaults to 1200.
+        window_title: Title shown in the window title bar. Defaults to "mesarcade".
+        target_fps: Target frames per second for animation. Defaults to 40.
+        rendering_step: Number of simulation steps between visual updates.
+            Defaults to 1.
+    """
 
     def __init__(
         self,
         model_class: type[mesa.Model],
-        plots: list = [],
-        controllers: list = [],
-        value_displays: list = [],
+        plots: list[Figure] = [],
+        controllers: list[NumController | CatController] = [],
+        value_displays: list[ValueDisplay] = [],
         window_width: int = 1200,
         window_title: str = "mesarcade",
         target_fps: int = 40,
         rendering_step: int = 1,
         _visible: bool = True,
     ) -> None:
-        """ "
-        Creates a new canvas instance.
-
-        Args:
-            model_class (type[mesa.Model]):
-                The mesa model class.
-            plots (list, optional):
-                The list of controllers that should be placed in the canvas.
-                Currently, the maximum number of plots is 4.
-                Defaults to [].
-            controllers (list, optional):
-                The list of controllers that should be placed in the canvas.
-                Defaults to [].
-            window_width (int, optional):
-                The width of the canvas window in pixels.
-                Determines the height of the canvas.
-                Defaults to 1200.
-            window_title (str, optional):
-                The title of the canvas.
-                Defaults to "mesarcade".
-            target_fps (int, optional):
-                The number of frames per second (FPS) that the animations should show.
-                Defaults to 40.
-            rendering_step (int, optional):
-                The number of simulation steps until the visualizations are rerendered.
-                Defaults to 1.
-        """
         window_height = int(window_width * 0.6)
 
         if not arcade.timings_enabled():
