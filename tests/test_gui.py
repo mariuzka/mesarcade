@@ -49,7 +49,9 @@ def test_boid_flockers():
 
 def test_game_of_life():
     def get_share_agents_alive(model):
-        return round(len([agent for agent in model.agents if agent.state == 1]) / len(model.agents), 2)
+        return round(
+            len([agent for agent in model.agents if agent.state == 1]) / len(model.agents), 2
+        )
 
     # artists
     agents = mesar.CellAgentArtists(
@@ -67,7 +69,7 @@ def test_game_of_life():
     dead_alive_plot = mesar.ModelHistoryPlot(
         model_attributes=[get_share_agents_alive],
         labels=["share agents alive"],
-        ylim=[0,1],
+        ylim=[0, 1],
     )
 
     # value displays
@@ -125,7 +127,6 @@ def test_schelling():
         value_displays=[happy_value],
         controllers=[density, minority_pc, homophily, width, height],
         _visible=False,
-        
     )
     run_gui_test(canvas)
 

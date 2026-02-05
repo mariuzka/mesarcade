@@ -236,7 +236,6 @@ class _ModelHistoryPlot:
 
                 # if there valid new data
                 if y is not None and np.isfinite(y):
-                    
                     # add new data point
                     self.data_dict[model_attr].append((tick, y))
 
@@ -244,7 +243,7 @@ class _ModelHistoryPlot:
                     if self.lower_y_lim is None:
                         if y < self.min_y:
                             self.min_y = y
-                    
+
                     if self.upper_y_lim is None:
                         if y > self.max_y:
                             self.max_y = y
