@@ -1,6 +1,9 @@
 import mesarcade as mesar
 from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
 
+def get_share_agents_alive(model):
+    return round(len([agent for agent in model.agents if agent.state == 1]) / len(model.agents), 2)
+
 # artists
 agents = mesar.CellAgentArtists(
     color_attribute="state",
@@ -15,17 +18,15 @@ space = mesar.GridSpacePlot(artists=[agents])
 
 # line plot
 dead_alive_plot = mesar.ModelHistoryPlot(
-    model_attributes=[
-        lambda model: len([agent for agent in model.agents if agent.state == 0]),
-        lambda model: len([agent for agent in model.agents if agent.state == 1]),
-    ],
-    labels=["n cells dead", "n cells alive"],
+    model_attributes=[get_share_agents_alive],
+    labels=["share agents alive"],
+    ylim=[0,1],
 )
 
 # value displays
-n_dead = mesar.ValueDisplay(
-    model_attribute=lambda model: len([agent for agent in model.agents if agent.state == 0]),
-    label="n dead",
+p_alive = mesar.ValueDisplay(
+    model_attribute=get_share_agents_alive,
+    label="share agents alive",
 )
 
 # controllers
@@ -38,7 +39,7 @@ canvas = mesar.Canvas(
     model_class=ConwaysGameOfLife,
     plots=[space, dead_alive_plot],
     controllers=[initial_fraction_alive, width, height],
-    value_displays=[n_dead],
+    value_displays=[p_alive],
 )
 
 # show gui window
