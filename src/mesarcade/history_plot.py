@@ -66,7 +66,9 @@ class _ModelHistoryPlot:
         self.title = title
         self.from_datacollector = from_datacollector
         self.colors = None
-
+        
+        self.padding = 10
+        
         self.validate_input()
 
         if colors is not None:
@@ -108,7 +110,7 @@ class _ModelHistoryPlot:
         self.width = self.figure.width
         self.height = self.figure.height
 
-        self.font_size = int(self.height * 0.03)
+        self.font_size = int(self.height * 0.025)
 
         self.plot_area_x = self.x + self.width * 0.15
         self.plot_area_y = self.y + self.height * 0.3
@@ -150,22 +152,49 @@ class _ModelHistoryPlot:
         self.figure.shape_list.append(outline)
 
     def create_axis_ticks(self):
+        min_y_tick_y_pos = self.plot_area_y + self.padding
+        mid_y_tick_y_pos = self.plot_area_y + self.padding + (self.plot_area_height - self.padding * 2) / 2
+        max_y_tick_y_pos = self.plot_area_y + self.plot_area_height - self.padding
+
         self.min_y_label = arcade.Text(
             text="",
             x=0,
-            y=self.plot_area_y,
+            y=min_y_tick_y_pos - self.font_size / 2,
             color=arcade.color.BLACK,
             font_size=self.font_size,
             batch=self.figure.text_batch,
         )
+
+        self.mid_y_label = arcade.Text(
+            text="",
+            x=0,
+            y=mid_y_tick_y_pos - self.font_size / 2,
+            color=arcade.color.BLACK,
+            font_size=self.font_size,
+            batch=self.figure.text_batch,
+        )
+
         self.max_y_label = arcade.Text(
             text="",
             x=0,
-            y=self.plot_area_y + self.plot_area_height - self.font_size,
+            y=max_y_tick_y_pos - self.font_size / 2,
             color=arcade.color.BLACK,
             font_size=self.font_size,
             batch=self.figure.text_batch,
         )
+
+        for i in range(5):
+            self.figure.shape_list.append(
+                arcade.shape_list.create_rectangle(
+                    center_x=self.plot_area_x - 2,
+                    center_y=min_y_tick_y_pos + (self.plot_area_height - self.padding * 2) / 4 * i,
+                    width=3,
+                    height=3,
+                    color=arcade.color.BLACK,
+                ))
+
+
+
 
     def create_legend(self):
         label_x = self.figure.x + self.width * 0.1
@@ -250,22 +279,21 @@ class _ModelHistoryPlot:
 
                 # Rescale the data
                 # TODO: Optimize this with numpy
-                padding = 10
                 self.scaled_data_dict[model_attr] = [
                     (
                         rescale(
                             value=x,
                             old_min=0,
                             old_max=tick,
-                            new_min=self.plot_area_x + padding,
-                            new_max=self.plot_area_x + self.plot_area_width - padding,
+                            new_min=self.plot_area_x + self.padding,
+                            new_max=self.plot_area_x + self.plot_area_width - self.padding,
                         ),
                         rescale(
                             value=y,
                             old_min=self.min_y,
                             old_max=self.max_y,
-                            new_min=self.plot_area_y + padding,
-                            new_max=self.plot_area_y + self.plot_area_height - padding,
+                            new_min=self.plot_area_y + self.padding,
+                            new_max=self.plot_area_y + self.plot_area_height - self.padding,
                         ),
                     )
                     for x, y in self.data_dict[model_attr]
@@ -276,14 +304,23 @@ class _ModelHistoryPlot:
             if self.min_y_label.text != str_min_y_label:
                 self.min_y_label.text = str_min_y_label
                 self.min_y_label.x = (
-                    self.plot_area_x - (len(str_min_y_label) + 1) * self.font_size / 1.5
+                    self.plot_area_x - (len(str_min_y_label) + 2) * self.font_size / 1.5
                 )
+            
+            # update medium y_label
+            str_mid_y_label = str(round((self.min_y + self.max_y) / 2, 3))
+            if self.mid_y_label.text != str_mid_y_label:
+                self.mid_y_label.text = str_mid_y_label
+                self.mid_y_label.x = (
+                    self.plot_area_x - (len(str_mid_y_label) + 2) * self.font_size / 1.5
+                )
+
             # update upper y_label
             str_max_y_label = str(round(self.max_y, 3))
             if self.max_y_label != str_max_y_label:
                 self.max_y_label.text = str_max_y_label
                 self.max_y_label.x = (
-                    self.plot_area_x - (len(str_max_y_label) + 1) * self.font_size / 1.5
+                    self.plot_area_x - (len(str_max_y_label) + 2) * self.font_size / 1.5
                 )
 
     def draw(self):
