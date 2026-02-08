@@ -342,6 +342,9 @@ class ModelHistoryPlot(Figure):
         model_attributes: List of model attributes to track. Each element can be
             a string (attribute name) or a callable that takes a mesa.Model and
             returns a numeric value.
+        ylim: Optional y-axis limits as [min, max]. If None, limits are
+            determined automatically from the data. Individual elements can be
+            None to auto-scale only that bound.
         labels: Optional labels for the legend. If None, attribute names are
             used for string attributes, or "no label" for callables.
         colors: Optional colors for the lines. Accepts color names, RGB tuples,
