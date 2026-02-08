@@ -66,9 +66,9 @@ class _ModelHistoryPlot:
         self.title = title
         self.from_datacollector = from_datacollector
         self.colors = None
-        
+
         self.padding = 10
-        
+
         self.validate_input()
 
         if colors is not None:
@@ -153,7 +153,9 @@ class _ModelHistoryPlot:
 
     def create_axis_ticks(self):
         min_y_tick_y_pos = self.plot_area_y + self.padding
-        mid_y_tick_y_pos = self.plot_area_y + self.padding + (self.plot_area_height - self.padding * 2) / 2
+        mid_y_tick_y_pos = (
+            self.plot_area_y + self.padding + (self.plot_area_height - self.padding * 2) / 2
+        )
         max_y_tick_y_pos = self.plot_area_y + self.plot_area_height - self.padding
 
         self.min_y_label = arcade.Text(
@@ -191,10 +193,8 @@ class _ModelHistoryPlot:
                     width=3,
                     height=3,
                     color=arcade.color.BLACK,
-                ))
-
-
-
+                )
+            )
 
     def create_legend(self):
         label_x = self.figure.x + self.width * 0.1
@@ -306,7 +306,7 @@ class _ModelHistoryPlot:
                 self.min_y_label.x = (
                     self.plot_area_x - (len(str_min_y_label) + 2) * self.font_size / 1.5
                 )
-            
+
             # update medium y_label
             str_mid_y_label = str(round((self.min_y + self.max_y) / 2, 3))
             if self.mid_y_label.text != str_mid_y_label:

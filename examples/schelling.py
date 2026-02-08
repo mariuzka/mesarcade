@@ -12,7 +12,9 @@ agents = mesar.CellAgentArtists(
 space = mesar.GridSpacePlot(artists=agents)
 
 # line plot
-happy_plot = mesar.ModelHistoryPlot(model_attributes=["happy"], labels=["Happy agents"], ylim=[0, None])
+happy_plot = mesar.ModelHistoryPlot(
+    model_attributes=["happy"], labels=["Happy agents"], ylim=[0, None]
+)
 
 # value display
 happy_value = mesar.ValueDisplay(model_attribute="happy", label="Happy agents")
