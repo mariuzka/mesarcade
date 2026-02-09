@@ -21,7 +21,7 @@ exclude = ["docs"]
 
 [tool.poetry]
 name = "mesarcade"
-version = "0.1.1"
+version = "0.1.2"
 packages = [{include = "mesarcade", from="src/"}]
 description = "Visualize mesa models using python arcade."
 authors = [
