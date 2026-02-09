@@ -187,7 +187,8 @@ class Renderer(arcade.View):
             value_display.setup(i=i + 3, renderer=self)
 
     def add_default_buttons(self):
-        DefaultButtons(renderer=self).add_to_anchor()
+        self.default_buttons = DefaultButtons(renderer=self)
+        self.default_buttons.add_to_anchor()
 
     def add_rendering_step_buttons(self):
         self.rendering_step_buttons = NumController(
