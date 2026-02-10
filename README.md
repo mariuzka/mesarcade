@@ -31,11 +31,11 @@ Mesarcade follows a compositional design: you define how agents are drawn (Artis
 
 Artists are the visual representations of the entities in a mesa model.
 
-- `CellArtists`: A visual representation for `mesa.Cell` and `mesa.Property_Layer`.
-- `CellAgentArtists`: A visual representation for a set of `mesa.CellAgent`s.
-- `ContinuousSpaceAgentArtists`: A visual representation for a set of `mesa.ContinuousSpaceAgent`s.
-- `NetworkCellArtists`: A visual representation for cells in a `mesa.Network`.
-- `NetworkAgentArtists`: A visual representation for agents on a `mesa.Network`.
+- `CellArtists`: A visual representation for entities of type `Cell`.
+- `CellAgentArtists`: A visual representation for a set of entities of type `CellAgent`.
+- `ContinuousSpaceAgentArtists`: A visual representation for a set of entities of type `mesa.ContinuousSpaceAgent`s.
+- `NetworkCellArtists`: A visual representation for cells in a Network.
+- `NetworkAgentArtists`: A visual representation for agents on a Network.
 
 **Example:**
 
@@ -43,7 +43,7 @@ Let's create a visual representation for our CellAgents. We map the agent attrib
 
 ```python
 agents = mesar.CellAgentArtists(
-    gcolor_attribute="type",
+    color_attribute="type",
     color_map={0: "blue", 1: "red"},
 )
 ```
@@ -70,9 +70,9 @@ grid_space = mesar.GridSpacePlot(artists=[agents])
 
 Line plots that plot (multiple) values as a function of the simulated time steps.
 
-- `ModelHistoryPlot`: Plots model attributes and data that is collected using `mesa.DataCollector` as a function of the simulated time steps.
+- `ModelHistoryPlot`: Plots model attributes or data that is collected using the model's datacollector as a function of the simulated time steps.
 
-- (`AgentHistoryPlot`: On the ToDo-List.)
+- `AgentHistoryPlot`: On the ToDo-List.
 
 **Example**
 
