@@ -34,6 +34,8 @@ def test_parameter_input():
     assert model.width == 500
     assert model.height == 500
 
+    canvas.window.close()
+
 
 def test_parameter_input_with_controller():
 
@@ -58,3 +60,5 @@ def test_parameter_input_with_controller():
 
     model = canvas.renderer.model
     assert model.radius == 44
+
+    canvas.window.close()
