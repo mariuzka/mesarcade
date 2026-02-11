@@ -20,6 +20,7 @@ class Renderer(arcade.View):
         window_height: int,
         target_fps: int,
         rendering_step: int,
+        parameter_dict: dict | None,
     ):
         super().__init__()
 
@@ -27,7 +28,7 @@ class Renderer(arcade.View):
         self.figures = figures
         self.controllers = controllers
         self.value_displays = value_displays
-        self.parameter_dict = {}
+        self.parameter_dict = {} if parameter_dict is None else parameter_dict
         self.window_width = window_width
         self.window_height = window_height
         self.target_fps = target_fps
