@@ -1,6 +1,6 @@
-from mesa.examples.basic.schelling.model import Schelling
 import mesa
 import mesarcade as mesar
+
 
 def test_parameter_input():
 
@@ -17,7 +17,7 @@ def test_parameter_input():
     )
 
     canvas._setup()
-    
+
     model = canvas.renderer.model
     assert model.radius == 99
     assert model.width == 500
@@ -55,6 +55,6 @@ def test_parameter_input_with_controller():
         _visible=False,
     )
     canvas._setup()
-    
+
     model = canvas.renderer.model
     assert model.radius == 44
