@@ -26,6 +26,9 @@ class Canvas:
         controllers: List of controllers (NumController, CatController) for
             adjusting model parameters interactively.
         value_displays: List of ValueDisplay instances showing model metrics.
+        params: Dictionary of fixed model parameters passed to the model
+            constructor. Values in this dict are overwritten by controllers
+            that target the same parameter. Defaults to None.
         window_width: Window width in pixels. Height is calculated as 60% of
             width. Defaults to 1200.
         window_title: Title shown in the window title bar. Defaults to "mesarcade".
@@ -40,6 +43,7 @@ class Canvas:
         plots: list[Figure] = [],
         controllers: list[NumController | CatController] = [],
         value_displays: list[ValueDisplay] = [],
+        params: dict | None = None,
         window_width: int = 1200,
         window_title: str = "mesarcade",
         target_fps: int = 40,
@@ -71,6 +75,7 @@ class Canvas:
             window_height=window_height,
             target_fps=target_fps,
             rendering_step=rendering_step,
+            parameter_dict=params,
         )
 
     def _setup(self):
