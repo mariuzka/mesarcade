@@ -3,6 +3,7 @@ from __future__ import annotations
 import arcade
 import numpy as np
 
+from mesarcade import styles
 from mesarcade.figure import Figure
 from mesarcade.utils import parse_color
 
@@ -45,6 +46,11 @@ def rescale_array_column_inplace(
         values[:] = (values - old_min) * new_range + new_min
 
 
+def format_tick(value: float) -> str:
+    """Formats an axis tick value compactly (max. 4 significant digits)."""
+    return f"{value:.4g}"
+
+
 class _ModelHistoryPlot:
     def __init__(
         self,
@@ -74,14 +80,7 @@ class _ModelHistoryPlot:
         if colors is not None:
             self.colors = [parse_color(color) for color in colors]
         else:
-            self.colors = [
-                arcade.color.NAVY_BLUE,
-                arcade.color.ORANGE,
-                arcade.color.GREEN,
-                arcade.color.RED,
-                arcade.color.PINK,
-                arcade.color.PURPLE,
-            ]
+            self.colors = list(styles.DATA_COLORS)
 
     def validate_input(self):
         if len(self.model_attrs) > 6:
@@ -110,11 +109,12 @@ class _ModelHistoryPlot:
         self.width = self.figure.width
         self.height = self.figure.height
 
-        self.font_size = int(self.height * 0.025)
+        self.font_size = self.height * 0.026
 
-        self.plot_area_x = self.x + self.width * 0.15
+        # leave room on the left for y tick labels like "0.7811"
+        self.plot_area_x = self.x + self.width * 0.18
         self.plot_area_y = self.y + self.height * 0.3
-        self.plot_area_width = self.width * (0.85 - 0.025)
+        self.plot_area_width = self.width * (0.82 - 0.03)
         self.plot_area_height = self.height * (0.7 - 0.025)
 
         self.data_dict = {model_attr: [] for model_attr in self.model_attrs}
@@ -131,74 +131,94 @@ class _ModelHistoryPlot:
         if self.legend:
             self.create_legend()
 
-    def create_plot_area(self):
-        background = arcade.shape_list.create_rectangle_filled(
-            center_x=self.plot_area_x + self.plot_area_width / 2,
-            center_y=self.plot_area_y + self.plot_area_height / 2,
-            width=self.plot_area_width,
-            height=self.plot_area_height,
-            color=arcade.color.WHITE,
+    def _text(self, text, x, y, color=None, **kwargs):
+        return self.renderer.text_layer.text(
+            text=text,
+            x=x,
+            y=y,
+            color=styles.PLOT_TEXT_MUTED if color is None else color,
+            font_size=self.font_size,
+            batch=self.figure.text_batch,
+            **kwargs,
         )
-        self.figure.shape_list.append(background)
 
-        outline = arcade.shape_list.create_rectangle_outline(
-            center_x=self.plot_area_x + self.plot_area_width / 2,
-            center_y=self.plot_area_y + self.plot_area_height / 2,
-            width=self.plot_area_width,
-            height=self.plot_area_height,
-            color=arcade.color.BLACK,
-            border_width=2,
+    def _y_tick_positions(self):
+        bottom = self.plot_area_y + self.padding
+        span = self.plot_area_height - self.padding * 2
+        return [bottom + span / 4 * i for i in range(5)]
+
+    def create_plot_area(self):
+        left = self.plot_area_x
+        right = self.plot_area_x + self.plot_area_width
+        bottom = self.plot_area_y
+        top = self.plot_area_y + self.plot_area_height
+
+        # horizontal grid lines
+        for y in self._y_tick_positions():
+            self.figure.shape_list.append(
+                arcade.shape_list.create_line(left, y, right, y, styles.PLOT_GRID, 1)
+            )
+
+        # left and bottom axis
+        self.figure.shape_list.append(
+            arcade.shape_list.create_line(left, bottom, left, top, styles.PLOT_AXIS, 1)
         )
-        self.figure.shape_list.append(outline)
+        self.figure.shape_list.append(
+            arcade.shape_list.create_line(left, bottom, right, bottom, styles.PLOT_AXIS, 1)
+        )
 
     def create_axis_ticks(self):
-        min_y_tick_y_pos = self.plot_area_y + self.padding
-        mid_y_tick_y_pos = (
-            self.plot_area_y + self.padding + (self.plot_area_height - self.padding * 2) / 2
-        )
-        max_y_tick_y_pos = self.plot_area_y + self.plot_area_height - self.padding
+        tick_length = 4
+        label_x = self.plot_area_x - tick_length - 4
 
-        self.min_y_label = arcade.Text(
-            text="",
-            x=0,
-            y=min_y_tick_y_pos - self.font_size / 2,
-            color=arcade.color.BLACK,
-            font_size=self.font_size,
-            batch=self.figure.text_batch,
-        )
-
-        self.mid_y_label = arcade.Text(
-            text="",
-            x=0,
-            y=mid_y_tick_y_pos - self.font_size / 2,
-            color=arcade.color.BLACK,
-            font_size=self.font_size,
-            batch=self.figure.text_batch,
-        )
-
-        self.max_y_label = arcade.Text(
-            text="",
-            x=0,
-            y=max_y_tick_y_pos - self.font_size / 2,
-            color=arcade.color.BLACK,
-            font_size=self.font_size,
-            batch=self.figure.text_batch,
-        )
-
-        for i in range(5):
+        # y ticks: lines at all 5 positions, labels at min, mid and max
+        y_positions = self._y_tick_positions()
+        for y in y_positions:
             self.figure.shape_list.append(
-                arcade.shape_list.create_rectangle(
-                    center_x=self.plot_area_x - 2,
-                    center_y=min_y_tick_y_pos + (self.plot_area_height - self.padding * 2) / 4 * i,
-                    width=3,
-                    height=3,
-                    color=arcade.color.BLACK,
+                arcade.shape_list.create_line(
+                    self.plot_area_x - tick_length, y, self.plot_area_x, y, styles.PLOT_AXIS, 1
                 )
             )
 
+        self.min_y_label = self._text(
+            "", label_x, y_positions[0], anchor_x="right", anchor_y="cap_center", mono=True
+        )
+        self.mid_y_label = self._text(
+            "", label_x, y_positions[2], anchor_x="right", anchor_y="cap_center", mono=True
+        )
+        self.max_y_label = self._text(
+            "", label_x, y_positions[4], anchor_x="right", anchor_y="cap_center", mono=True
+        )
+
+        # x ticks: first and current tick
+        x_left = self.plot_area_x + self.padding
+        x_right = self.plot_area_x + self.plot_area_width - self.padding
+        for x in (x_left, x_right):
+            self.figure.shape_list.append(
+                arcade.shape_list.create_line(
+                    x, self.plot_area_y - tick_length, x, self.plot_area_y, styles.PLOT_AXIS, 1
+                )
+            )
+
+        x_label_y = self.plot_area_y - tick_length - 4
+        self.min_x_label = self._text(
+            "0", x_left, x_label_y, anchor_x="center", anchor_y="top", mono=True
+        )
+        self.max_x_label = self._text(
+            "0", x_right, x_label_y, anchor_x="center", anchor_y="top", mono=True
+        )
+        self.x_axis_title = self._text(
+            "tick",
+            self.plot_area_x + self.plot_area_width / 2,
+            x_label_y,
+            anchor_x="center",
+            anchor_y="top",
+            italic=True,
+        )
+
     def create_legend(self):
         label_x = self.figure.x + self.width * 0.1
-        label_y = self.plot_area_y - self.height * 0.1
+        label_y = self.plot_area_y - self.height * 0.12
 
         if self.labels is not None:
             labels = self.labels
@@ -215,24 +235,20 @@ class _ModelHistoryPlot:
             else:
                 label_x_ = label_x
 
-            label_element = arcade.Text(
-                text=label,
-                x=label_x_,
-                y=label_y,
-                batch=self.figure.text_batch,
-                color=self.renderer.font_color,
-                font_size=self.font_size,
+            label_element = self._text(
+                label, label_x_, label_y, color=styles.PLOT_TEXT, anchor_y="cap_center"
             )
             self.figure.text_list.append(label_element)
 
-            color_dot = arcade.shape_list.create_ellipse(
-                center_x=label_x_ - self.font_size,
-                center_y=label_y + self.font_size / 3,
-                width=self.font_size,
-                height=self.font_size,
-                color=self.colors[i],
+            line_sample = arcade.shape_list.create_line(
+                label_x_ - self.font_size * 2.2,
+                label_y,
+                label_x_ - self.font_size * 0.6,
+                label_y,
+                self.colors[i],
+                3,
             )
-            self.figure.shape_list.append(color_dot)
+            self.figure.shape_list.append(line_sample)
 
     def update(self):
         # get the current time step
@@ -299,29 +315,11 @@ class _ModelHistoryPlot:
                     for x, y in self.data_dict[model_attr]
                 ]
 
-            # update lower y_label
-            str_min_y_label = str(round(self.min_y, 3))
-            if self.min_y_label.text != str_min_y_label:
-                self.min_y_label.text = str_min_y_label
-                self.min_y_label.x = (
-                    self.plot_area_x - (len(str_min_y_label) + 2) * self.font_size / 1.5
-                )
-
-            # update medium y_label
-            str_mid_y_label = str(round((self.min_y + self.max_y) / 2, 3))
-            if self.mid_y_label.text != str_mid_y_label:
-                self.mid_y_label.text = str_mid_y_label
-                self.mid_y_label.x = (
-                    self.plot_area_x - (len(str_mid_y_label) + 2) * self.font_size / 1.5
-                )
-
-            # update upper y_label
-            str_max_y_label = str(round(self.max_y, 3))
-            if self.max_y_label != str_max_y_label:
-                self.max_y_label.text = str_max_y_label
-                self.max_y_label.x = (
-                    self.plot_area_x - (len(str_max_y_label) + 2) * self.font_size / 1.5
-                )
+            # update axis labels
+            self.min_y_label.text = format_tick(self.min_y)
+            self.mid_y_label.text = format_tick((self.min_y + self.max_y) / 2)
+            self.max_y_label.text = format_tick(self.max_y)
+            self.max_x_label.text = str(tick)
 
     def draw(self):
         for i, model_attr in enumerate(self.model_attrs):

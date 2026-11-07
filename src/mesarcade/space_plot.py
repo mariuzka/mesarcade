@@ -17,7 +17,8 @@ class GridSpacePlot(Figure):
 
     Args:
         artists: Artist(s) defining how to render entities (e.g., CellAgentArtists).
-        background_color: Background color of the plot area.
+        background_color: Background color of the plot area. Defaults to the
+            panel color of the theme.
         title: Optional title displayed above the plot.
         get_space: Callable returning the grid space from the model.
     """
@@ -25,7 +26,7 @@ class GridSpacePlot(Figure):
     def __init__(
         self,
         artists: Artist | list[Artist] = [],
-        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] | None = None,
         title: str | None = None,
         get_space: Callable[[mesa.Model], Any] = lambda model: model.grid,
     ) -> None:
@@ -49,7 +50,8 @@ class ContinuousSpacePlot(Figure):
 
     Args:
         artists: Artist(s) defining how to render entities (e.g., ContinuousSpaceAgentArtists).
-        background_color: Background color of the plot area.
+        background_color: Background color of the plot area. Defaults to the
+            panel color of the theme.
         title: Optional title displayed above the plot.
         get_space: Callable returning the continuous space from the model.
     """
@@ -57,7 +59,7 @@ class ContinuousSpacePlot(Figure):
     def __init__(
         self,
         artists: Artist | list[Artist] = [],
-        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] | None = None,
         title: str | None = None,
         get_space: Callable[[mesa.Model], Any] = lambda model: model.space,
     ) -> None:
@@ -81,7 +83,8 @@ class NetworkPlot(Figure):
 
     Args:
         artists: Artist(s) defining how to render entities (e.g., NetworkCellArtists).
-        background_color: Background color of the plot area.
+        background_color: Background color of the plot area. Defaults to the
+            panel color of the theme.
         title: Optional title displayed above the plot.
         get_space: Callable returning the network grid from the model.
     """
@@ -89,7 +92,7 @@ class NetworkPlot(Figure):
     def __init__(
         self,
         artists: Artist | list[Artist] = [],
-        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] = "white",
+        background_color: str | tuple[int, int, int] | tuple[int, int, int, int] | None = None,
         title: str | None = None,
         get_space: Callable[[mesa.Model], Any] = lambda model: model.grid,
     ) -> None:

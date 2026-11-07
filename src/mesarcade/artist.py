@@ -8,6 +8,7 @@ import matplotlib
 import matplotlib.colors
 import networkx as nx
 
+from mesarcade import styles
 from mesarcade.utils import parse_color
 
 if TYPE_CHECKING:
@@ -515,7 +516,7 @@ class NetworkCellArtists(Artist):
 
             arcade.draw_line_strip(
                 [node_u_pos, node_v_pos],
-                color=arcade.color.BLACK,
+                color=styles.EDGE,
                 line_width=max(1, self.node_size / 5),
             )
 

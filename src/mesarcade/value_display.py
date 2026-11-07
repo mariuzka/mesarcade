@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-import arcade
 from pyglet.graphics import Batch
+
+from mesarcade import styles
 
 if TYPE_CHECKING:
     import mesa
@@ -56,7 +57,7 @@ class ValueDisplay:
         self.y_of_label = self.y_of_self
 
         self.x_of_value = self.x_of_self
-        self.y_of_value = self.y_of_self - self.renderer.atomic_height
+        self.y_of_value = self.y_of_self - self.renderer.atomic_height * 1.2
 
         if initial_value is not None:
             self.current_value = str(initial_value)
@@ -74,23 +75,25 @@ class ValueDisplay:
             label_text = "no label"
 
         # create the label element
-        self.label_element = arcade.Text(
+        self.label_element = self.renderer.text_layer.text(
             text=label_text,
             x=self.x_of_label,
             y=self.y_of_label,
             batch=self.text_batch,
-            color=self.renderer.font_color,
-            font_size=self.renderer.font_size,
+            color=styles.TEXT_MUTED,
+            font_size=self.renderer.font_size * 0.8,
+            bold=True,
         )
         self.text_list.append(self.label_element)
 
-        self.value_element = arcade.Text(
+        self.value_element = self.renderer.text_layer.text(
             text=self.current_value,
             x=self.x_of_value,
             y=self.y_of_value,
             batch=self.text_batch,
-            color=self.renderer.font_color,
-            font_size=self.renderer.font_size,
+            color=styles.NUMBER,
+            font_size=self.renderer.font_size * 1.35,
+            mono=True,
         )
         self.text_list.append(self.value_element)
 
@@ -116,4 +119,5 @@ class ValueDisplay:
                 self.value_element.text = new_value
 
     def draw(self):
-        self.text_batch.draw()
+        # text is drawn by the renderer's text layer
+        pass

@@ -1,18 +1,19 @@
 import arcade
 import arcade.gui
 
-from mesarcade.styles import create_button_style
+from mesarcade import styles
+from mesarcade.styles import create_button_style, create_primary_button_style
 
 
 class SmallButton(arcade.gui.UIFlatButton):
     def __init__(self, renderer):
-        super().__init__(
-            style=create_button_style(font_size=renderer.small_button_height / 1.5),
-        )
+        font_size = renderer.small_button_height / 1.5
+        super().__init__(style=create_button_style(font_size=font_size))
         self.renderer = renderer
         self.height = self.renderer.small_button_height
         self.width = self.renderer.small_button_width
         self.setup()
+        self.renderer.text_layer.add_caption(self, font_size=font_size, color=styles.TEXT)
 
     def setup(self):
         pass
@@ -20,16 +21,25 @@ class SmallButton(arcade.gui.UIFlatButton):
 
 class BigButton(arcade.gui.UIFlatButton):
     def __init__(self, renderer):
-        super().__init__(
-            style=create_button_style(font_size=renderer.big_button_height / 3.5),
-        )
+        self.font_size = renderer.big_button_height / 3.2
+        super().__init__(style=create_button_style(font_size=self.font_size))
         self.renderer = renderer
         self.height = self.renderer.big_button_height
         self.width = self.renderer.big_button_width
+        self.caption = self.renderer.text_layer.add_caption(
+            self, font_size=self.font_size, color=styles.TEXT
+        )
         self.setup()
 
     def setup(self):
         pass
+
+    def set_primary(self, primary: bool) -> None:
+        """Switches between the accent colored and the default button style."""
+        style_factory = create_primary_button_style if primary else create_button_style
+        self.style = style_factory(font_size=self.font_size)
+        self.caption.crisp_text.color = styles.TEXT_ON_ACCENT if primary else styles.TEXT
+        self.trigger_full_render()
 
 
 class PlayButton(BigButton):
@@ -37,7 +47,9 @@ class PlayButton(BigButton):
         self.get_text()
 
     def get_text(self):
+        # highlighted while the simulation is running, default style while paused
         self.text = "Play" if not self.renderer.play else "Pause"
+        self.set_primary(self.renderer.play)
 
     def on_click(self, event):
         self.renderer.update_value_displays(force_update=True)

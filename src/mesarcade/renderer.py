@@ -5,8 +5,9 @@ import mesa
 
 from mesarcade.button import DefaultButtons
 from mesarcade.controller import NumController
-from mesarcade.utils import parse_color
-from mesarcade.value_display import ValueDisplay
+from mesarcade import styles
+from mesarcade.chrome import Chrome
+from mesarcade.text import TextLayer
 
 
 class Renderer(arcade.View):
@@ -41,6 +42,9 @@ class Renderer(arcade.View):
         # tick counter
         self.tick = 0
 
+        # crisp text rendering (HiDPI aware)
+        self.text_layer = TextLayer(window=self.window)
+
         # ui stuff
         self.buttons = []
         self.ui_groups = []
@@ -48,8 +52,10 @@ class Renderer(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.manager.add(self.anchor)
-        self.background_color = parse_color("whitesmoke")
-        self.font_color = (45, 45, 50)
+        self.background_color = styles.BACKGROUND
+        self.font_color = styles.TEXT
+        self.font_color_muted = styles.TEXT_MUTED
+        self.font_name = styles.FONT_NAME
 
         # calculate window properties
         self.atomic_width = round(self.window_width / 36)
@@ -57,10 +63,13 @@ class Renderer(arcade.View):
 
         self.small_button_width = self.atomic_width * 0.6
         self.small_button_height = self.atomic_height * 0.8
-        self.big_button_width = round(self.atomic_width * 2)
-        self.big_button_height = round(self.atomic_height * 2)
+        self.big_button_width = round(self.atomic_width * 1.9)
+        self.big_button_height = round(self.atomic_height * 1.7)
 
         self.font_size = round(self.atomic_height * 0.5)
+
+        # window chrome: side bar and status bar
+        self.chrome = Chrome(renderer=self)
 
         # setup core components
         self.setup_model()
@@ -112,14 +121,20 @@ class Renderer(arcade.View):
             fig_height = self.atomic_height * 19
 
             fig_1 = self.figures[0]
+            # shifted to the right to leave room for the side bar
+            shift = self.atomic_width * 0.3
             fig_1_x = (
-                self.window_width / 2 - fig_width / 2 - fig_width / 4 - self.atomic_height * 1.5
+                self.window_width / 2
+                - fig_width / 2
+                - fig_width / 4
+                - self.atomic_height * 1.5
+                + shift
             )
             fig_1_y = self.window_height / 2 - fig_width / 2
             fig_1.setup(x=fig_1_x, y=fig_1_y, width=fig_width, height=fig_height, renderer=self)
 
             fig_2 = self.figures[1]
-            fig_2_x = self.window_width / 2 + fig_width / 4 - self.atomic_height * 0.5
+            fig_2_x = self.window_width / 2 + fig_width / 4 - self.atomic_height * 0.5 + shift
             fig_2_y = self.window_height / 2 - fig_width / 2
             fig_2.setup(x=fig_2_x, y=fig_2_y, width=fig_width, height=fig_height, renderer=self)
 
@@ -165,27 +180,24 @@ class Renderer(arcade.View):
             controller.setup(i=i + 3)
         self.set_target_objects_of_controllers()
 
-    def draw_value_displays(self) -> None:
-        self.tick_display.draw()
-        self.fps_display.draw()
-        for value_display in self.value_displays:
-            value_display.draw()
+    def draw_text(self) -> None:
+        batches = [figure.text_batch for figure in self.figures]
+        batches += [value_display.text_batch for value_display in self.value_displays]
+        batches.append(self.chrome.text_batch)
+        self.text_layer.draw(batches=batches)
 
     def update_value_displays(self, force_update=False) -> None:
-        self.tick_display.update(new_value=self.tick, force_update=force_update)
-        self.fps_display.update(new_value=int(arcade.get_fps(60)), force_update=force_update)
+        if self.tick % 10 == 0 or force_update:
+            self.chrome.update_status()
         for value_display in self.value_displays:
             value_display.update(force_update=force_update)
 
     def setup_value_displays(self) -> None:
-        self.tick_display = ValueDisplay(model_attribute=None, label="Tick", update_step=10)
-        self.tick_display.setup(i=1, renderer=self, initial_value=self.tick)
-
-        self.fps_display = ValueDisplay(model_attribute=None, label="FPS", update_step=10)
-        self.fps_display.setup(i=2, renderer=self, initial_value=int(arcade.get_fps(60)))
+        # tick and fps are shown in the status bar
+        self.chrome.update_status()
 
         for i, value_display in enumerate(self.value_displays):
-            value_display.setup(i=i + 3, renderer=self)
+            value_display.setup(i=i + 1, renderer=self)
 
     def add_default_buttons(self):
         self.default_buttons = DefaultButtons(renderer=self)
@@ -248,10 +260,10 @@ class Renderer(arcade.View):
         """Render the screen."""
 
         self.clear()
+        self.chrome.draw()
         self.draw_figures()
-        self.draw_value_displays()
-
         self.manager.draw()
+        self.draw_text()
 
     def on_update(self, delta_time):
         if self.play:

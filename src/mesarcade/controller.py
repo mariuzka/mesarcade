@@ -6,7 +6,8 @@ import arcade
 import arcade.gui
 import arcade.gui.widgets.text
 
-from mesarcade.styles import create_button_style
+from mesarcade import styles
+from mesarcade.styles import create_button_style, create_slider_style
 from mesarcade.button import SmallButton
 
 
@@ -168,7 +169,7 @@ class ControllerButton(SmallButton):
         self.step_digits = len(str(step))
         super().__init__(renderer=renderer)
         self.renderer.ui_groups.append(self)
-        self.text = "+" if self.increase else "-"
+        self.text = "+" if self.increase else "\u2212"  # minus sign
 
     def on_click(self, event):
         if self.parameter_name not in ["target_fps", "rendering_step"]:
@@ -268,16 +269,18 @@ class CatControllerButtons(_ControllerButtons):
             renderer=self.renderer,
         )
 
-        self.label = arcade.gui.widgets.text.UILabel(
+        FONT_SIZE = self.renderer.atomic_height * 0.5
+        self.label = self.renderer.text_layer.text(
             text=self.parameter_name if self.label is None else self.label,
-            text_color=arcade.color.BLACK,
-            font_size=int(self.renderer.atomic_height / 2),
-            font_name="arial",
+            x=0,
+            y=0,
+            font_size=FONT_SIZE,
+            color=styles.TEXT,
+            anchor_y="cap_center",
         )
-        FONT_SIZE = int(self.renderer.atomic_height / 2)
         primary_style = create_button_style(font_size=FONT_SIZE)
-        active_style = create_button_style(font_size=FONT_SIZE)
-        dropdown_style = create_button_style(font_size=FONT_SIZE)
+        active_style = create_button_style(font_size=FONT_SIZE, font_color=styles.TEXT)
+        dropdown_style = create_button_style(font_size=FONT_SIZE, font_color=styles.TEXT)
 
         self.dropdown = arcade.gui.UIDropdown(
             default=str(value),
@@ -289,6 +292,9 @@ class CatControllerButtons(_ControllerButtons):
             dropdown_style=dropdown_style,
         )
         self.dropdown.on_change = self.on_dropdown_change
+        self.renderer.text_layer.add_caption(
+            self.dropdown._default_button, font_size=FONT_SIZE, color=styles.TEXT
+        )
 
     def update(self):
         self.current_value = get_current_parameter_value(
@@ -313,12 +319,12 @@ class CatControllerButtons(_ControllerButtons):
         self.update()
 
     def add_to_anchor(self):
-        self.renderer.anchor.add(
-            self.label,
-            anchor_x="left",
-            anchor_y="top",
-            align_x=int(self.renderer.atomic_width),
-            align_y=int(self.align_y + self.renderer.atomic_height),
+        self.label.position = (
+            self.renderer.atomic_width,
+            self.renderer.window_height
+            + self.align_y
+            + self.renderer.atomic_height
+            - self.renderer.small_button_height / 2,
         )
         self.renderer.anchor.add(
             self.dropdown,
@@ -360,11 +366,14 @@ class NumControllerButtons(_ControllerButtons):
             renderer=self.renderer,
         )
 
-        self.label = arcade.gui.widgets.text.UILabel(
+        font_size = self.renderer.atomic_height * 0.5
+        self.label = self.renderer.text_layer.text(
             text=self.parameter_name if self.label is None else self.label,
-            text_color=arcade.color.BLACK,
-            font_size=int(self.renderer.atomic_height / 2),
-            font_name="arial",
+            x=0,
+            y=0,
+            font_size=font_size,
+            color=styles.TEXT,
+            anchor_y="cap_center",
         )
 
         self.increase_button = ControllerButton(
@@ -383,11 +392,14 @@ class NumControllerButtons(_ControllerButtons):
             increase=False,
             step=step,
         )
-        self.label_current_value = arcade.gui.widgets.text.UILabel(
+        self.label_current_value = self.renderer.text_layer.text(
             text=str(self.current_value),
-            text_color=arcade.color.BLACK,
-            font_size=int(self.renderer.atomic_height / 2),
-            font_name="arial",
+            x=0,
+            y=0,
+            font_size=font_size,
+            color=styles.NUMBER,
+            anchor_y="cap_center",
+            mono=True,
         )
         self.slider = arcade.gui.UISlider(
             value=self.parameter_value,
@@ -395,32 +407,9 @@ class NumControllerButtons(_ControllerButtons):
             max_value=self.max_value,
             step=self.step,
             width=self.renderer.atomic_width * 7,
+            style=create_slider_style(),
         )
         self.slider.on_change = self.on_slider_change
-
-        self.slider.style["normal"].bg = arcade.color.LIGHT_GRAY
-        self.slider.style["hover"].bg = arcade.color.LIGHT_GRAY
-        self.slider.style["press"].bg = arcade.color.LIGHT_GRAY
-
-        self.slider.style["normal"].filled_track = arcade.color.BATTLESHIP_GREY
-        self.slider.style["hover"].filled_track = arcade.color.BATTLESHIP_GREY
-        self.slider.style["press"].filled_track = arcade.color.BATTLESHIP_GREY
-
-        self.slider.style["normal"].filled_step = arcade.color.BLACK
-        self.slider.style["hover"].filled_step = arcade.color.BLACK
-        self.slider.style["press"].filled_step = arcade.color.BLACK
-
-        self.slider.style["normal"].unfilled_step = arcade.color.BLACK
-        self.slider.style["hover"].unfilled_step = arcade.color.BLACK
-        self.slider.style["press"].unfilled_step = arcade.color.BLACK
-
-        self.slider.style["normal"].border = arcade.color.BLACK
-        self.slider.style["hover"].border = arcade.color.BLACK
-        self.slider.style["press"].border = arcade.color.BLACK
-
-        self.slider.style["normal"].border_width = 2
-        self.slider.style["hover"].border_width = 3
-        self.slider.style["press"].border_width = 4
         self.update()
 
     def update(self):
@@ -450,14 +439,19 @@ class NumControllerButtons(_ControllerButtons):
 
     def add_to_anchor(self):
         ALIGN_X = self.renderer.atomic_width
-
-        self.renderer.anchor.add(
-            self.label,
-            anchor_x="left",
-            anchor_y="top",
-            align_x=ALIGN_X,
-            align_y=int(self.align_y + self.renderer.atomic_height),
+        row_center_y = (
+            self.renderer.window_height
+            + self.align_y
+            + self.renderer.atomic_height
+            - self.renderer.small_button_height / 2
         )
+
+        self.label.position = (ALIGN_X, row_center_y)
+        self.label_current_value.position = (
+            ALIGN_X + self.renderer.atomic_width * 6,
+            row_center_y,
+        )
+
         self.renderer.anchor.add(
             self.decrease_button,
             anchor_x="left",
@@ -469,14 +463,10 @@ class NumControllerButtons(_ControllerButtons):
             self.increase_button,
             anchor_x="left",
             anchor_y="top",
-            align_x=ALIGN_X + self.renderer.atomic_width * 4 + self.renderer.small_button_width,
-            align_y=self.align_y + self.renderer.atomic_height,
-        )
-        self.renderer.anchor.add(
-            self.label_current_value,
-            anchor_x="left",
-            anchor_y="top",
-            align_x=ALIGN_X + self.renderer.atomic_width * 6,
+            align_x=ALIGN_X
+            + self.renderer.atomic_width * 4
+            + self.renderer.small_button_width
+            + 3,
             align_y=self.align_y + self.renderer.atomic_height,
         )
         self.renderer.anchor.add(

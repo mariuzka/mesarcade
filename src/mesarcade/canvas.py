@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import arcade
 import mesa
 
+from mesarcade import styles
 from mesarcade.renderer import Renderer
 
 if TYPE_CHECKING:
@@ -35,6 +36,9 @@ class Canvas:
         target_fps: Target frames per second for animation. Defaults to 40.
         rendering_step: Number of simulation steps between visual updates.
             Defaults to 1.
+        theme: Color theme of the window, "dark" or "light". Both are modelled
+            after Visual Studio Code. Plots stay light in both themes.
+            Defaults to "light".
     """
 
     def __init__(
@@ -48,8 +52,11 @@ class Canvas:
         window_title: str = "mesarcade",
         target_fps: int = 40,
         rendering_step: int = 1,
+        theme: Literal["dark", "light"] = "light",
         _visible: bool = True,
     ) -> None:
+        styles.apply_theme(theme)
+
         window_height = int(window_width * 0.6)
 
         if not arcade.timings_enabled():

@@ -1,6 +1,7 @@
 import arcade
 from pyglet.graphics import Batch
 
+from mesarcade import styles
 from mesarcade.utils import parse_color
 
 
@@ -9,12 +10,13 @@ class Figure:
         self,
         get_space,
         components=[],
-        background_color="whitesmoke",
+        background_color=None,
         title: str | None = None,
         figure_type: str | None = None,
     ):
         self.components = components
-        self.background_color = parse_color(background_color)
+        # None: resolved in setup(), when the theme of the canvas is known
+        self._background_color = background_color
         self.title = title
         self.get_space = get_space
         self.figure_type = figure_type
@@ -25,6 +27,10 @@ class Figure:
         self.width = width
         self.height = height
         self.renderer = renderer
+
+        self.background_color = (
+            styles.PANEL if self._background_color is None else parse_color(self._background_color)
+        )
 
         self.font_size = self.height * 0.03
 
@@ -50,8 +56,8 @@ class Figure:
             component.update()
 
     def draw(self):
+        # text is drawn by the renderer's text layer
         self.shape_list.draw()
-        self.text_batch.draw()
         for component in self.components:
             component.draw()
 
@@ -62,13 +68,15 @@ class Figure:
 
     def create_empty_figure(self):
         if self.title is not None:
-            title_text = arcade.Text(
-                text=self.title,
+            # panel header in the style of VS Code: small, uppercase, muted
+            title_text = self.renderer.text_layer.text(
+                text=self.title.upper(),
                 x=self.x,
-                y=self.y + self.height + 5,
+                y=self.y + self.height + 8,
                 batch=self.text_batch,
-                color=self.renderer.font_color,
-                font_size=self.font_size,
+                color=styles.TEXT_MUTED,
+                font_size=self.renderer.font_size * 0.85,
+                bold=True,
             )
             self.text_list.append(title_text)
 
@@ -86,7 +94,7 @@ class Figure:
             center_y=self.y + self.height / 2,
             width=self.width,
             height=self.height,
-            color=arcade.color.BLACK,
-            border_width=2,
+            color=styles.PLOT_BORDER,
+            border_width=1,
         )
         self.shape_list.append(outline)
