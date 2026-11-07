@@ -1,5 +1,6 @@
-import mesarcade as mesar
 from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
+
+import mesarcade as mesar
 
 
 def get_share_agents_alive(model):

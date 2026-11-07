@@ -1,5 +1,6 @@
-import mesarcade as mesar
 from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
+
+import mesarcade as mesar
 
 # agents
 agents_on_sugar = mesar.CellAgentArtists(

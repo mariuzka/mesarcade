@@ -1,5 +1,6 @@
-import mesarcade as mesar
 from mesa.examples.basic.schelling.model import Schelling
+
+import mesarcade as mesar
 
 # artists
 agents = mesar.CellAgentArtists(

@@ -1,11 +1,11 @@
-import mesarcade as mesar
+import networkx as nx
 from mesa.examples.advanced.sugarscape_g1mt.model import SugarscapeG1mt
+from mesa.examples.basic.boid_flockers.model import BoidFlockers
+from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
 from mesa.examples.basic.schelling.model import Schelling
 from mesa.examples.basic.virus_on_network.model import VirusOnNetwork
-from mesa.examples.basic.conways_game_of_life.model import ConwaysGameOfLife
-from mesa.examples.basic.boid_flockers.model import BoidFlockers
 
-import networkx as nx
+import mesarcade as mesar
 
 
 def run_gui_test(canvas, n_steps=10):
