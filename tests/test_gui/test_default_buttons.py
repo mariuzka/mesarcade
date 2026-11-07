@@ -1,4 +1,5 @@
 from mesa.examples.basic.schelling.model import Schelling
+
 import mesarcade as mesar
 
 

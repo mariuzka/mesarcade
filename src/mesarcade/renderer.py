@@ -3,10 +3,10 @@ import arcade.gui
 import arcade.gui.widgets.text
 import mesa
 
-from mesarcade.button import DefaultButtons
-from mesarcade.controller import NumController
 from mesarcade import styles
+from mesarcade.button import DefaultButtons
 from mesarcade.chrome import Chrome
+from mesarcade.controller import NumController
 from mesarcade.text import TextLayer
 
 

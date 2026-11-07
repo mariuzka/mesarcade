@@ -1,4 +1,5 @@
 from mesa.examples.basic.boid_flockers.model import BoidFlockers
+
 import mesarcade as mesar
 
 # artists

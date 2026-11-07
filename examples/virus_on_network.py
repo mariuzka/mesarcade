@@ -1,6 +1,7 @@
-import mesarcade as mesar
-from mesa.examples.basic.virus_on_network.model import VirusOnNetwork
 import networkx as nx
+from mesa.examples.basic.virus_on_network.model import VirusOnNetwork
+
+import mesarcade as mesar
 
 # network artists (draws nodes and edges)
 network = mesar.NetworkAgentArtists(

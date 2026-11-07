@@ -1,6 +1,8 @@
-from mesa.examples.basic.boid_flockers.model import BoidFlockers
-import mesarcade as mesar
 from dataclasses import dataclass
+
+from mesa.examples.basic.boid_flockers.model import BoidFlockers
+
+import mesarcade as mesar
 
 
 @dataclass

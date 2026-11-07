@@ -7,8 +7,8 @@ import arcade.gui
 import arcade.gui.widgets.text
 
 from mesarcade import styles
-from mesarcade.styles import create_button_style, create_slider_style
 from mesarcade.button import SmallButton
+from mesarcade.styles import create_button_style, create_slider_style
 
 
 def round_parameter_value(value, step):
@@ -116,10 +116,10 @@ class NumController(_Controller):
     def __init__(
         self,
         parameter_name: str,
-        parameter_value: float | int,
-        min_value: float | int,
-        max_value: float | int,
-        step: float | int,
+        parameter_value: float,
+        min_value: float,
+        max_value: float,
+        step: float,
         label: str | None = None,
         _target_object: Any = None,
     ) -> None:
@@ -155,7 +155,7 @@ class ControllerButton(SmallButton):
     def __init__(
         self,
         controller: _Controller,
-        controller_buttons: "NumControllerButtons",
+        controller_buttons: NumControllerButtons,
         renderer,
         parameter_name: str,
         increase=True,
@@ -183,11 +183,9 @@ class ControllerButton(SmallButton):
         new_parameter_value = current_value + self.step
         new_parameter_value = round_parameter_value(new_parameter_value, self.step)
 
-        if new_parameter_value > self.controller_buttons.max_value:
-            new_parameter_value = self.controller_buttons.max_value
+        new_parameter_value = min(new_parameter_value, self.controller_buttons.max_value)
 
-        if new_parameter_value < self.controller_buttons.min_value:
-            new_parameter_value = self.controller_buttons.min_value
+        new_parameter_value = max(new_parameter_value, self.controller_buttons.min_value)
 
         set_new_parameter_value(
             parameter_name=self.parameter_name,

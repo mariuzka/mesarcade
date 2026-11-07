@@ -9,8 +9,8 @@ from mesarcade import styles
 from mesarcade.renderer import Renderer
 
 if TYPE_CHECKING:
+    from mesarcade.controller import CatController, NumController
     from mesarcade.figure import Figure
-    from mesarcade.controller import NumController, CatController
     from mesarcade.value_display import ValueDisplay
 
 

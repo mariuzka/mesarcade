@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import arcade
 import numpy as np
 
@@ -7,10 +9,9 @@ from mesarcade import styles
 from mesarcade.figure import Figure
 from mesarcade.utils import parse_color
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
-    from typing import Any, Callable
+    from collections.abc import Callable
+    from typing import Any
 
     import mesa
 
@@ -286,12 +287,10 @@ class _ModelHistoryPlot:
 
                     # update min and max values
                     if self.lower_y_lim is None:
-                        if y < self.min_y:
-                            self.min_y = y
+                        self.min_y = min(self.min_y, y)
 
                     if self.upper_y_lim is None:
-                        if y > self.max_y:
-                            self.max_y = y
+                        self.max_y = max(self.max_y, y)
 
                 # Rescale the data
                 # TODO: Optimize this with numpy
