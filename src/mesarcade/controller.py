@@ -260,6 +260,8 @@ class CatControllerButtons(_ControllerButtons):
         self.parameter_name = parameter_name
         self.parameter_value = value
         self.options = options
+        # the dropdown works with strings, this maps them back to the original values
+        self.options_by_text = {str(option): option for option in options}
         self.label = label
         self.target_object = self.renderer.model if target_object is None else target_object
 
@@ -307,7 +309,9 @@ class CatControllerButtons(_ControllerButtons):
         if self.parameter_name != "target_fps":
             self.target_object = self.renderer.model
 
-        new_parameter_value = dropdown_event.new_value
+        new_parameter_value = self.options_by_text.get(
+            dropdown_event.new_value, dropdown_event.new_value
+        )
 
         setattr(
             self.target_object,

@@ -273,14 +273,15 @@ class _ModelHistoryPlot:
                 else:
                     y = model_attr(self.model)
 
-                # set min and max values initially
-                if self.max_y is None:
-                    self.max_y = y + 0.000001 * y
-                if self.min_y is None:
-                    self.min_y = y
-
                 # if there valid new data
                 if y is not None and np.isfinite(y):
+                    # set min and max values initially (only from valid data,
+                    # otherwise None/NaN would break the axis permanently)
+                    if self.max_y is None:
+                        self.max_y = y
+                    if self.min_y is None:
+                        self.min_y = y
+
                     # add new data point
                     self.data_dict[model_attr].append((tick, y))
 
@@ -315,10 +316,11 @@ class _ModelHistoryPlot:
                     for x, y in self.data_dict[model_attr]
                 ]
 
-            # update axis labels
-            self.min_y_label.text = format_tick(self.min_y)
-            self.mid_y_label.text = format_tick((self.min_y + self.max_y) / 2)
-            self.max_y_label.text = format_tick(self.max_y)
+            # update axis labels (y range is unknown until the first valid value)
+            if self.min_y is not None and self.max_y is not None:
+                self.min_y_label.text = format_tick(self.min_y)
+                self.mid_y_label.text = format_tick((self.min_y + self.max_y) / 2)
+                self.max_y_label.text = format_tick(self.max_y)
             self.max_x_label.text = str(tick)
 
     def draw(self):
