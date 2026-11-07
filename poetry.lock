@@ -1543,15 +1543,15 @@ files = [
 
 [[package]]
 name = "mesa"
-version = "3.4.2"
+version = "3.5.2"
 description = "Agent-based modeling (ABM) in Python"
 optional = false
 python-versions = ">=3.12"
 groups = ["main"]
 markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or sys_platform != \"win32\" and sys_platform != \"emscripten\""
 files = [
-    {file = "mesa-3.4.2-py3-none-any.whl", hash = "sha256:2b1513abe6e6de7ebf80065ca903d6580d58a065a2982fa714d2e85ac712bc39"},
-    {file = "mesa-3.4.2.tar.gz", hash = "sha256:1118cc3213dfaa3f6ce06b062a68c05625231bc3ead36b9387cb3cf7709e7e63"},
+    {file = "mesa-3.5.2-py3-none-any.whl", hash = "sha256:ec6dcb7ee596c8a3d9d6714f0e35509bc89e88c3aa16ad14d517ea81d467e610"},
+    {file = "mesa-3.5.2.tar.gz", hash = "sha256:8c6c0199d59d67216cac9e6229cedbf78543dcf9c7c281a1d11ff924212972f3"},
 ]
 
 [package.dependencies]
@@ -1562,13 +1562,13 @@ scipy = "*"
 tqdm = "*"
 
 [package.extras]
-all = ["altair", "ipython", "ipython (>=9.2.0)", "matplotlib", "myst-nb", "myst-parser", "networkx", "playwright", "pydata-sphinx-theme", "pytest", "pytest-cov", "pytest-ipywidgets", "pytest-mock", "pytest-playwright", "ruff", "scipy", "seaborn", "solara", "sphinx", "sphinx-copybutton"]
-dev = ["altair", "ipython (>=9.2.0)", "matplotlib", "networkx", "playwright", "pytest", "pytest-cov", "pytest-ipywidgets", "pytest-mock", "pytest-playwright", "ruff", "solara", "sphinx"]
-docs = ["altair", "ipython", "matplotlib", "myst-nb", "myst-parser", "networkx", "pydata-sphinx-theme", "seaborn", "solara", "sphinx", "sphinx-copybutton"]
-examples = ["altair", "matplotlib", "networkx", "pytest", "scipy", "solara"]
+all = ["altair", "ipython", "ipython (>=9.2.0)", "matplotlib", "myst-nb", "myst-parser", "networkx", "playwright", "pyarrow", "pydata-sphinx-theme", "pytest", "pytest-cov", "pytest-ipywidgets", "pytest-mock", "pytest-playwright", "ruff", "scipy", "seaborn", "solara", "sphinx", "sphinx-copybutton", "starlette (<1.0)"]
+dev = ["altair", "ipython (>=9.2.0)", "matplotlib", "networkx", "playwright", "pyarrow", "pytest", "pytest-cov", "pytest-ipywidgets", "pytest-mock", "pytest-playwright", "ruff", "solara", "sphinx", "starlette (<1.0)"]
+docs = ["altair", "ipython", "matplotlib", "myst-nb", "myst-parser", "networkx", "pydata-sphinx-theme", "seaborn", "solara", "sphinx", "sphinx-copybutton", "starlette (<1.0)"]
+examples = ["altair", "matplotlib", "networkx", "pytest", "scipy", "solara", "starlette (<1.0)"]
 network = ["networkx"]
-rec = ["altair", "matplotlib", "networkx", "solara"]
-viz = ["altair", "matplotlib", "solara"]
+rec = ["altair", "matplotlib", "networkx", "solara", "starlette (<1.0)"]
+viz = ["altair", "matplotlib", "solara", "starlette (<1.0)"]
 
 [[package]]
 name = "mistune"
